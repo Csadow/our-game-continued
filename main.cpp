@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
+#include "game.h"
 
 int main(int argc, char** argv) {
     bool test = argc > 1 && std::string(argv[1]) == "--smoke-test";
@@ -20,7 +21,8 @@ int main(int argc, char** argv) {
     glfwSwapInterval(test ? 0 : 1);
     double previous = glfwGetTime();
     int frames = 0;
-    // GAME_SETUP
+    Game game;
+    double accumulator = 0;
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -28,7 +30,16 @@ int main(int argc, char** argv) {
         double now = glfwGetTime();
         float dt = static_cast<float>(std::min(now - previous, 0.1));
         previous = now;
-        // GAME_UPDATE
+        Input input;
+        auto down = [&](int key) { return glfwGetKey(window, key) == GLFW_PRESS; };
+        input.x = float(down(GLFW_KEY_D)) - float(down(GLFW_KEY_A));
+        input.z = float(down(GLFW_KEY_S)) - float(down(GLFW_KEY_W));
+        input.slow = down(GLFW_KEY_LEFT_SHIFT) || down(GLFW_KEY_RIGHT_SHIFT);
+        accumulator += test ? 1.0 / 60.0 : dt;
+        while (accumulator >= FIXED_STEP) {
+            game.update(FIXED_STEP, input);
+            accumulator -= FIXED_STEP;
+        }
         (void)dt;
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);

@@ -10,7 +10,7 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
-add_executable(bullethell main.cpp)
+add_executable(bullethell main.cpp game.cpp)
 target_link_libraries(bullethell PRIVATE OpenGL::GL glfw GLEW::GLEW glm::glm)
 if(MSVC)
     target_compile_options(bullethell PRIVATE /W4)
