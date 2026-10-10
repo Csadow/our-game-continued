@@ -23,6 +23,10 @@ set_target_properties(bullethell PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BI
 foreach(config DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
     set_target_properties(bullethell PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${config} "${CMAKE_BINARY_DIR}")
 endforeach()
+foreach(shader scene.vert scene.frag hud.vert hud.frag)
+    configure_file("${shader}" "${CMAKE_BINARY_DIR}/${shader}" COPYONLY)
+endforeach()
+
 # Allow launching the MinGW build from Explorer as well as the MSYS2 terminal.
 if(WIN32 AND MINGW)
     get_filename_component(mingw_bin "${CMAKE_CXX_COMPILER}" DIRECTORY)
