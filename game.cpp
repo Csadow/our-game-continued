@@ -1,16 +1,67 @@
 #include "game.h"
-#include <algorithm>
 
-void Game::reset() { *this = Game{}; }
-int Game::score() const { return static_cast<int>(elapsed * 100); }
+#include <algorithm>
+#include <cmath>
+
+namespace {
+constexpr float PI = 3.14159265359f;
+
+void fire(Game& game, float angle, float speed, bool aimed) {
+    glm::vec3 direction(std::cos(angle), 0.0f, std::sin(angle));
+    game.bullets.push_back({game.enemy, direction * speed, aimed});
+}
+}
+
+void Game::reset() {
+    *this = Game{};
+}
+
+int Game::score() const {
+    return static_cast<int>(elapsed * 100.0f);
+}
 
 void Game::update(float dt, const Input& input) {
-    if (paused || finished() || dt <= 0) return;
-    elapsed += dt;
-    glm::vec3 movement(input.x, 0, input.z);
-    if (glm::dot(movement, movement) > 1)
+    if (paused || finished() || dt <= 0.0f)
+        return;
+
+    // A fixed 120 Hz step keeps movement and collision independent of frame rate.
+    elapsed = std::min(elapsed + dt, ROUND_SECONDS);
+    invulnerable = std::max(0.0f, invulnerable - dt);
+    wave = std::min(3, 1 + static_cast<int>(elapsed / 20.0f));
+
+    glm::vec3 movement(input.x, 0.0f, input.z);
+    if (glm::dot(movement, movement) > 1.0f)
         movement = glm::normalize(movement);
     player += movement * (input.slow ? 2.4f : 5.2f) * dt;
     player.x = glm::clamp(player.x, -ARENA_X + PLAYER_RADIUS, ARENA_X - PLAYER_RADIUS);
     player.z = glm::clamp(player.z, -ARENA_Z + PLAYER_RADIUS, ARENA_Z - PLAYER_RADIUS);
+    enemy.x = 2.8f * std::sin(elapsed * 0.55f);
+    enemy.z = -4.5f + 0.5f * std::sin(elapsed * 0.8f);
+
+    aimTimer -= dt;
+    if (aimTimer <= 0.0f) {
+        glm::vec3 toPlayer = player - enemy;
+        float angle = std::atan2(toPlayer.z, toPlayer.x);
+        // A three-shot fan aimed at the player's position when it was fired.
+        for (int i = -1; i <= 1; ++i)
+            fire(*this, angle + i * 0.20f, 4.0f + wave * 0.6f, true);
+        aimTimer += 1.05f - wave * 0.12f;
+    }
+
+    ringTimer -= dt;
+    if (ringTimer <= 0.0f) {
+        int count = 14 + wave * 4;
+        float rotation = elapsed * 0.33f;
+        for (int i = 0; i < count; ++i)
+            fire(*this, rotation + 2.0f * PI * i / count, 2.5f + wave * 0.35f, false);
+        ringTimer += 2.1f - wave * 0.15f;
+    }
+
+    for (auto it = bullets.begin(); it != bullets.end();) {
+        it->position += it->velocity * dt;
+        if (std::abs(it->position.x) > ARENA_X + 2 || std::abs(it->position.z) > ARENA_Z + 2)
+            it = bullets.erase(it);
+        else
+            ++it;
+    }
 }

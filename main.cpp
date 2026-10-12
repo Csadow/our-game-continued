@@ -332,6 +332,13 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
         }
 
         draw(cube, game.enemy + glm::vec3(0,.85f,0), {.85f,.85f,.85f}, {.7f,.1f,.2f});
+        for (const Bullet& bullet : game.bullets) {
+            glm::vec3 color = bullet.aimed ? glm::vec3(1.0f,.32f,.08f) : glm::vec3(.88f,.12f,.45f);
+            draw(sphere, bullet.position, glm::vec3(BULLET_RADIUS), color, .75f);
+            glm::vec3 tail = bullet.position - glm::normalize(bullet.velocity) * .23f;
+            draw(sphere, tail, glm::vec3(BULLET_RADIUS * .5f), color * .6f, .4f);
+        }
+
         bool blink = game.invulnerable > 0.0f && static_cast<int>(game.invulnerable * 12) % 2 == 0;
         glm::vec3 playerColor = blink ? glm::vec3(.65f,.68f,.73f) : glm::vec3(.12f,.8f,.95f);
         draw(sphere, {game.player.x,.04f,game.player.z}, {.42f,.025f,.42f}, {.03f,.30f,.37f}, .4f);
