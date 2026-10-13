@@ -165,12 +165,23 @@ std::vector<Vertex> sphereVertices() {
 }
 
 GLuint makeFloorTexture() {
-    const unsigned char pixel[3] = {75, 75, 75};
-    GLuint texture;
+    constexpr int size = 64;
+    std::vector<unsigned char> pixels(size * size * 3);
+    for (int y = 0; y < size; ++y) {
+        for (int x = 0; x < size; ++x) {
+            bool checker = ((x / 32) + (y / 32)) % 2 == 0;
+            int i = (y * size + x) * 3;
+            pixels[i] = checker ? 34 : 24;
+            pixels[i + 1] = checker ? 47 : 35;
+            pixels[i + 2] = checker ? 58 : 45;
+        }
+    }
+    GLuint texture = 0;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     return texture;
