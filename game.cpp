@@ -57,11 +57,26 @@ void Game::update(float dt, const Input& input) {
         ringTimer += 2.1f - wave * 0.15f;
     }
 
+    const float hitDistance = PLAYER_RADIUS + BULLET_RADIUS;
     for (auto it = bullets.begin(); it != bullets.end();) {
         it->position += it->velocity * dt;
-        if (std::abs(it->position.x) > ARENA_X + 2 || std::abs(it->position.z) > ARENA_Z + 2)
+        glm::vec3 difference = player - it->position;
+        bool hit = glm::dot(difference, difference) <= hitDistance * hitDistance;
+        bool outside = std::abs(it->position.x) > ARENA_X + 2.0f ||
+                       std::abs(it->position.z) > ARENA_Z + 2.0f;
+        if (hit) {
+            if (invulnerable <= 0.0f) {
+                --health;
+                invulnerable = 1.2f;
+            }
+            // Remove overlapping shots even during the brief damage grace period.
             it = bullets.erase(it);
-        else
+        } else if (outside) {
+            it = bullets.erase(it);
+        } else {
             ++it;
+        }
     }
+    if (elapsed >= ROUND_SECONDS && health > 0)
+        won = true;
 }
