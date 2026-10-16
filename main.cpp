@@ -342,7 +342,15 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
             }
         }
 
-        draw(cube, game.enemy + glm::vec3(0,.85f,0), {.85f,.85f,.85f}, {.7f,.1f,.2f});
+        draw(sphere, {game.enemy.x,.04f,game.enemy.z}, {.7f,.025f,.7f}, {.35f,.06f,.16f}, .3f);
+        glm::vec3 enemyCore = game.enemy + glm::vec3(0, .85f, 0);
+        draw(cube, enemyCore, {.85f,.85f,.85f}, {.65f,.16f,.10f}, .20f, game.elapsed, .65f);
+        draw(cube, enemyCore, {.45f,.45f,.45f}, {.90f,.53f,.20f}, .35f, -game.elapsed * 1.5f);
+        for (int i = 0; i < 4; ++i) {
+            float a = game.elapsed * 1.4f + i * 1.5707963f;
+            glm::vec3 p = enemyCore + glm::vec3(std::cos(a)*.95f, .05f, std::sin(a)*.95f);
+            draw(cube, p, {.16f,.16f,.16f}, {.70f,.22f,.12f}, .25f, a);
+        }
         for (const Bullet& bullet : game.bullets) {
             glm::vec3 color = bullet.aimed ? glm::vec3(1.0f,.32f,.08f) : glm::vec3(.88f,.12f,.45f);
             draw(sphere, bullet.position, glm::vec3(BULLET_RADIUS), color, .75f);
