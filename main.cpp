@@ -187,6 +187,130 @@ GLuint makeFloorTexture() {
     return texture;
 }
 
+// A tiny 5x7 font: each set bit becomes a quad. No font library or texture needed.
+const std::map<char, std::array<unsigned char, 7>> FONT = {
+    {'A',{14,17,17,31,17,17,17}}, {'B',{30,17,17,30,17,17,30}},
+    {'C',{14,17,16,16,16,17,14}}, {'D',{30,17,17,17,17,17,30}},
+    {'E',{31,16,16,30,16,16,31}}, {'F',{31,16,16,30,16,16,16}},
+    {'G',{14,17,16,23,17,17,14}}, {'H',{17,17,17,31,17,17,17}},
+    {'I',{14,4,4,4,4,4,14}},     {'J',{7,2,2,2,18,18,12}},
+    {'K',{17,18,20,24,20,18,17}}, {'L',{16,16,16,16,16,16,31}},
+    {'M',{17,27,21,21,17,17,17}}, {'N',{17,25,21,19,17,17,17}},
+    {'O',{14,17,17,17,17,17,14}}, {'P',{30,17,17,30,16,16,16}},
+    {'Q',{14,17,17,17,21,18,13}}, {'R',{30,17,17,30,20,18,17}},
+    {'S',{15,16,16,14,1,1,30}},   {'T',{31,4,4,4,4,4,4}},
+    {'U',{17,17,17,17,17,17,14}}, {'V',{17,17,17,17,17,10,4}},
+    {'W',{17,17,17,21,21,21,10}}, {'X',{17,17,10,4,10,17,17}},
+    {'Y',{17,17,10,4,4,4,4}},     {'Z',{31,1,2,4,8,16,31}},
+    {'0',{14,17,19,21,25,17,14}}, {'1',{4,12,4,4,4,4,14}},
+    {'2',{14,17,1,2,4,8,31}},     {'3',{30,1,1,14,1,1,30}},
+    {'4',{2,6,10,18,31,2,2}},     {'5',{31,16,16,30,1,1,30}},
+    {'6',{14,16,16,30,17,17,14}}, {'7',{31,1,2,4,8,8,8}},
+    {'8',{14,17,17,14,17,17,14}}, {'9',{14,17,17,15,1,1,14}},
+    {':',{0,4,4,0,4,4,0}},       {'/',{1,2,2,4,8,8,16}},
+    {'-',{0,0,0,31,0,0,0}},      {'.',{0,0,0,0,0,4,4}}
+};
+
+struct HudVertex { glm::vec2 position; glm::vec4 color; };
+
+struct Hud {
+    GLuint vao = 0;
+    GLuint vbo = 0;
+    GLuint program = 0;
+    GLint projectionLocation = -1;
+    std::vector<HudVertex> vertices;
+
+    void create(const fs::path& directory) {
+        program = makeProgram(directory / "hud.vert", directory / "hud.frag");
+        projectionLocation = glGetUniformLocation(program, "projection");
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(HudVertex), nullptr);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(HudVertex),
+                              reinterpret_cast<void*>(offsetof(HudVertex, color)));
+    }
+
+    void rect(float x, float y, float w, float h, glm::vec4 color) {
+        vertices.insert(vertices.end(), {
+            {{x,y},color}, {{x+w,y},color}, {{x+w,y+h},color},
+            {{x,y},color}, {{x+w,y+h},color}, {{x,y+h},color}
+        });
+    }
+
+    void text(float x, float y, const std::string& value, float size, glm::vec4 color) {
+        for (char c : value) {
+            auto glyph = FONT.find(c);
+            if (glyph != FONT.end()) {
+                for (int row = 0; row < 7; ++row)
+                    for (int column = 0; column < 5; ++column)
+                        if (glyph->second[row] & (1 << (4 - column)))
+                            rect(x + column * size, y + row * size, size, size, color);
+            }
+            x += 6.0f * size;
+        }
+    }
+
+    void draw(const Game& game, float width) {
+        vertices.clear();
+        glm::vec4 white(0.88f, 0.86f, 0.81f, 1.0f);
+        glm::vec4 muted(0.58f, 0.57f, 0.54f, 1.0f);
+        glm::vec4 red(0.26f, 0.92f, 0.95f, 1.0f);
+        glm::vec4 dark(0.07f, 0.065f, 0.06f, 0.94f);
+        text(24, 65, "ORBIT / SURVIVAL", 2, white);
+        text(24, 89, "WEEK 7 BETA", 1.5f, muted);
+        for (int i = 0; i < MAX_HEALTH; ++i)
+            rect(24.0f + i * 29.0f, 30, 23, 15,
+                 i < game.health ? red : glm::vec4(0.25f, 0.24f, 0.22f, 1));
+
+        std::string score = "SCORE " + std::to_string(game.score());
+        text(width - 24 - score.size() * 12.0f, 30, score, 2.0f, white);
+
+        text(width - 230, 65, "WAVE " + std::to_string(game.wave), 1.6f, white);
+        text(width - 230, 89, "TIME " + std::to_string(int(game.elapsed)), 1.6f, muted);
+        text(25, 611, "SURVIVE THE PATTERNS", 1.7f, muted);
+        rect(24, 640, width - 48, 61, dark);
+        rect(40, 652, width - 80, 4, {0.24f,0.23f,0.21f,1});
+        rect(40, 652, (width - 80) * game.elapsed / ROUND_SECONDS, 4, muted);
+        text(40, 675, "WASD MOVE   SHIFT SLOW   P PAUSE   R RESTART   ESC QUIT", 1.6f, white);
+
+        if (game.paused || game.finished()) {
+            rect(0, 0, width, 720, {0.03f,0.025f,0.02f,0.62f});
+            float left = width * 0.5f - 230.0f;
+            rect(left, 270, 460, 168, dark);
+            rect(left, 270, 460, 3, muted);
+            std::string title = game.won ? "ROUND CLEAR" : game.health <= 0 ? "GAME OVER" : "PAUSED";
+            float titleWidth = static_cast<float>(title.size()) * 6 * 3.5f;
+            text((width - titleWidth) * 0.5f, 300, title, 3.5f, white);
+            std::string line = game.finished() ? "SCORE " + std::to_string(game.score()) : "P TO RESUME";
+            text((width - line.size() * 12.0f) * 0.5f, 350, line, 2.0f, white);
+            text(left + 68, 398, "R RESTART   ESC QUIT", 1.8f, muted);
+        }
+
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glUseProgram(program);
+        glm::mat4 projection = glm::ortho(0.0f, width, 720.0f, 0.0f);
+        glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(HudVertex), vertices.data(), GL_STREAM_DRAW);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices.size()));
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+    }
+
+    void destroy() {
+        glDeleteBuffers(1, &vbo);
+        glDeleteVertexArrays(1, &vao);
+        glDeleteProgram(program);
+    }
+};
+
 void saveScreenshot(const fs::path& path, int width, int height) {
     std::vector<unsigned char> pixels(static_cast<std::size_t>(width) * height * 3);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -241,6 +365,8 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
         {{-1,0,-1},{0,1,0},{0,0}}, {{-1,0,1},{0,1,0},{0,1}}, {{1,0,1},{0,1,0},{1,1}}
     });
     GLuint texture = makeFloorTexture();
+    Hud hud;
+    hud.create(directory);
 
     Game game;
     glfwSetWindowUserPointer(window, &game);
@@ -364,6 +490,7 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
         draw(sphere, game.player, glm::vec3(PLAYER_RADIUS), playerColor, .25f);
         draw(cube, game.player + glm::vec3(0,.30f,0), {.15f,.15f,.15f}, {.8f,1,1}, .6f, game.elapsed);
 
+        hud.draw(game, 720.0f * aspect);
         if (smokeTest) {
             GLenum error = glGetError();
             if (error != GL_NO_ERROR)
@@ -380,6 +507,7 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
     if (smokeTest)
         std::cout << "Smoke test passed: " << frames << " frames, " << game.bullets.size()
                   << " active projectiles, HP " << game.health << ", time " << game.elapsed << "\n";
+    hud.destroy();
     floor.destroy();
     sphere.destroy();
     cube.destroy();
