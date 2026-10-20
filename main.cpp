@@ -171,9 +171,9 @@ GLuint makeFloorTexture() {
         for (int x = 0; x < size; ++x) {
             bool checker = ((x / 32) + (y / 32)) % 2 == 0;
             int i = (y * size + x) * 3;
-            pixels[i] = checker ? 34 : 24;
-            pixels[i + 1] = checker ? 47 : 35;
-            pixels[i + 2] = checker ? 58 : 45;
+            pixels[i] = checker ? 82 : 69;
+            pixels[i + 1] = checker ? 80 : 67;
+            pixels[i + 2] = checker ? 75 : 62;
         }
     }
     GLuint texture = 0;
@@ -258,10 +258,8 @@ struct Hud {
         vertices.clear();
         glm::vec4 white(0.88f, 0.86f, 0.81f, 1.0f);
         glm::vec4 muted(0.58f, 0.57f, 0.54f, 1.0f);
-        glm::vec4 red(0.26f, 0.92f, 0.95f, 1.0f);
+        glm::vec4 red(0.72f, 0.20f, 0.15f, 1.0f);
         glm::vec4 dark(0.07f, 0.065f, 0.06f, 0.94f);
-        text(24, 65, "ORBIT / SURVIVAL", 2, white);
-        text(24, 89, "WEEK 7 BETA", 1.5f, muted);
         for (int i = 0; i < MAX_HEALTH; ++i)
             rect(24.0f + i * 29.0f, 30, 23, 15,
                  i < game.health ? red : glm::vec4(0.25f, 0.24f, 0.22f, 1));
@@ -269,9 +267,6 @@ struct Hud {
         std::string score = "SCORE " + std::to_string(game.score());
         text(width - 24 - score.size() * 12.0f, 30, score, 2.0f, white);
 
-        text(width - 230, 65, "WAVE " + std::to_string(game.wave), 1.6f, white);
-        text(width - 230, 89, "TIME " + std::to_string(int(game.elapsed)), 1.6f, muted);
-        text(25, 611, "SURVIVE THE PATTERNS", 1.7f, muted);
         rect(24, 640, width - 48, 61, dark);
         rect(40, 652, width - 80, 4, {0.24f,0.23f,0.21f,1});
         rect(40, 652, (width - 80) * game.elapsed / ROUND_SECONDS, 4, muted);
@@ -376,7 +371,7 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
             state->paused = true;
     });
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.025f, 0.035f, 0.055f, 1.0f);
+    glClearColor(0.055f, 0.052f, 0.048f, 1.0f);
     bool previousPause = false;
     bool previousRestart = false;
     double lastTime = glfwGetTime();
@@ -458,7 +453,7 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
 
         draw(cube, {0,-.18f,0}, {18.3f,.32f,14.3f}, {.18f,.17f,.15f});
         draw(floor, {0,.005f,0}, {ARENA_X,1,ARENA_Z}, {1,1,1}, 0, 0, 0, true);
-        glm::vec3 border(.08f,.40f,.46f);
+        glm::vec3 border(.34f,.33f,.30f);
         for (float side : {-1.0f, 1.0f}) {
             draw(cube, {side * ARENA_X,.08f,0}, {.10f,.16f,14.1f}, border);
             draw(cube, {0,.08f,side * ARENA_Z}, {18.1f,.16f,.10f}, border);
@@ -468,7 +463,6 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
             }
         }
 
-        draw(sphere, {game.enemy.x,.04f,game.enemy.z}, {.7f,.025f,.7f}, {.35f,.06f,.16f}, .3f);
         glm::vec3 enemyCore = game.enemy + glm::vec3(0, .85f, 0);
         draw(cube, enemyCore, {.85f,.85f,.85f}, {.65f,.16f,.10f}, .20f, game.elapsed, .65f);
         draw(cube, enemyCore, {.45f,.45f,.45f}, {.90f,.53f,.20f}, .35f, -game.elapsed * 1.5f);
@@ -478,17 +472,13 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
             draw(cube, p, {.16f,.16f,.16f}, {.70f,.22f,.12f}, .25f, a);
         }
         for (const Bullet& bullet : game.bullets) {
-            glm::vec3 color = bullet.aimed ? glm::vec3(1.0f,.32f,.08f) : glm::vec3(.88f,.12f,.45f);
-            draw(sphere, bullet.position, glm::vec3(BULLET_RADIUS), color, .75f);
-            glm::vec3 tail = bullet.position - glm::normalize(bullet.velocity) * .23f;
-            draw(sphere, tail, glm::vec3(BULLET_RADIUS * .5f), color * .6f, .4f);
+            glm::vec3 color = bullet.aimed ? glm::vec3(.80f,.12f,.08f) : glm::vec3(.90f,.54f,.12f);
+            draw(sphere, bullet.position, glm::vec3(BULLET_RADIUS), color, .25f);
         }
 
         bool blink = game.invulnerable > 0.0f && static_cast<int>(game.invulnerable * 12) % 2 == 0;
-        glm::vec3 playerColor = blink ? glm::vec3(.65f,.68f,.73f) : glm::vec3(.12f,.8f,.95f);
-        draw(sphere, {game.player.x,.04f,game.player.z}, {.42f,.025f,.42f}, {.03f,.30f,.37f}, .4f);
-        draw(sphere, game.player, glm::vec3(PLAYER_RADIUS), playerColor, .25f);
-        draw(cube, game.player + glm::vec3(0,.30f,0), {.15f,.15f,.15f}, {.8f,1,1}, .6f, game.elapsed);
+        glm::vec3 playerColor = blink ? glm::vec3(.65f,.68f,.73f) : glm::vec3(.18f,.36f,.62f);
+        draw(sphere, game.player, glm::vec3(PLAYER_RADIUS), playerColor);
 
         hud.draw(game, 720.0f * aspect);
         if (smokeTest) {

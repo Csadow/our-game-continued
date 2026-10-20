@@ -30,11 +30,11 @@ void main() {
         // Anti-aliased grid lines, computed from world coordinates.
         vec2 grid = abs(fract(worldPosition.xz - 0.5) - 0.5);
         vec2 line = 1.0 - smoothstep(vec2(0.0), fwidth(worldPosition.xz) * 1.2, grid);
-        color += vec3(0.05, 0.22, 0.25) * max(line.x, line.y);
+        color += vec3(0.08, 0.075, 0.065) * max(line.x, line.y);
     }
 
     // A small distance fade makes the far side of the arena easier to read.
     float fog = smoothstep(22.0, 45.0, length(cameraPosition - worldPosition));
-    color = mix(color, vec3(0.025, 0.035, 0.055), fog * 0.5);
+    color = mix(color, vec3(0.055, 0.052, 0.048), fog * 0.5);
     fragColor = vec4(color, 1.0);
 }
