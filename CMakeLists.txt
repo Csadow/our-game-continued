@@ -39,3 +39,13 @@ if(WIN32 AND MINGW)
     endforeach()
 endif()
 
+include(CTest)
+if(BUILD_TESTING)
+    add_executable(game_tests game_tests.cpp game.cpp)
+    target_link_libraries(game_tests PRIVATE glm::glm)
+    add_test(NAME game_rules COMMAND game_tests)
+    if(WIN32 AND MINGW)
+        # Tests run in the directory containing the game's copied runtime DLLs.
+        add_dependencies(game_tests bullethell)
+    endif()
+endif()
