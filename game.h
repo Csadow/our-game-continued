@@ -9,12 +9,16 @@ constexpr float PLAYER_RADIUS = 0.30f;
 constexpr float BULLET_RADIUS = 0.16f;
 constexpr float ROUND_SECONDS = 60.0f;
 constexpr float FIXED_STEP = 1.0f / 120.0f;
+constexpr float DASH_SPEED = 15.0f;
+constexpr float DASH_DURATION = 0.18f;
+constexpr float DASH_COOLDOWN = 2.5f;
 constexpr int MAX_HEALTH = 5;
 
 struct Input {
     float x = 0.0f;
     float z = 0.0f;
     bool slow = false;
+    bool dash = false;
 };
 
 struct Bullet {
@@ -34,6 +38,9 @@ struct Game {
     float invulnerable = 1.0f;
     float aimTimer = 1.4f;
     float ringTimer = 2.5f;
+    float dashCooldown = 0.0f;
+    float dashTime = 0.0f;
+    glm::vec3 dashDirection{0.0f};
     bool paused = false;
     bool won = false;
 

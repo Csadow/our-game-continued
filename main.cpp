@@ -266,11 +266,18 @@ struct Hud {
 
         std::string score = "SCORE " + std::to_string(game.score());
         text(width - 24 - score.size() * 12.0f, 30, score, 2.0f, white);
+        if (game.dashCooldown <= 0.0f) {
+            text(24, 58, "DASH READY", 1.5f, white);
+        } else {
+            int tenths = static_cast<int>(std::ceil(game.dashCooldown * 10.0f));
+            text(24, 58, "DASH " + std::to_string(tenths / 10) + "." +
+                 std::to_string(tenths % 10), 1.5f, muted);
+        }
 
         rect(24, 640, width - 48, 61, dark);
         rect(40, 652, width - 80, 4, {0.24f,0.23f,0.21f,1});
         rect(40, 652, (width - 80) * game.elapsed / ROUND_SECONDS, 4, muted);
-        text(40, 675, "WASD MOVE   SHIFT SLOW   P PAUSE   R RESTART   ESC QUIT", 1.6f, white);
+        text(40, 675, "WASD MOVE   SHIFT SLOW   SPACE DASH   P PAUSE   R RESTART   ESC QUIT", 1.4f, white);
 
         if (game.paused || game.finished()) {
             rect(0, 0, width, 720, {0.03f,0.025f,0.02f,0.62f});
@@ -343,7 +350,7 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
     // GLEW may probe a removed extension enum while initializing a core context.
     while (glGetError() != GL_NO_ERROR) {}
     std::cout << "OpenGL " << glGetString(GL_VERSION) << "\nGPU: " << glGetString(GL_RENDERER)
-              << "\nWASD move | Shift slow | P pause | R restart | Esc quit\n";
+              << "\nWASD move | Shift slow | Space dash | P pause | R restart | Esc quit\n";
 
     GLuint program = makeProgram(directory / "scene.vert", directory / "scene.frag");
     GLint modelLocation = glGetUniformLocation(program, "model");
@@ -374,6 +381,8 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
     glClearColor(0.055f, 0.052f, 0.048f, 1.0f);
     bool previousPause = false;
     bool previousRestart = false;
+    bool previousDash = false;
+    bool dashQueued = false;
     double lastTime = glfwGetTime();
     double accumulator = 0.0;
     int frames = 0;
@@ -390,13 +399,19 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
         if (restart && !previousRestart) {
             game.reset();
             accumulator = 0.0;
+            dashQueued = false;
         }
         previousPause = pause;
         previousRestart = restart;
+        bool dash = down(GLFW_KEY_SPACE);
+        if (dash && !previousDash)
+            dashQueued = true;
+        previousDash = dash;
         Input input;
         input.x = static_cast<float>(down(GLFW_KEY_D)) - static_cast<float>(down(GLFW_KEY_A));
         input.z = static_cast<float>(down(GLFW_KEY_S)) - static_cast<float>(down(GLFW_KEY_W));
         input.slow = down(GLFW_KEY_LEFT_SHIFT) || down(GLFW_KEY_RIGHT_SHIFT);
+        input.dash = dashQueued;
 
         int width = 0, height = 0;
         glfwGetFramebufferSize(window, &width, &height);
@@ -416,6 +431,8 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
         accumulator += dt;
         while (accumulator >= FIXED_STEP) {
             game.update(FIXED_STEP, input);
+            dashQueued = false;
+            input.dash = false;
             accumulator -= FIXED_STEP;
         }
 

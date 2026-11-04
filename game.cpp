@@ -27,12 +27,20 @@ void Game::update(float dt, const Input& input) {
     // A fixed 120 Hz step keeps movement and collision independent of frame rate.
     elapsed = std::min(elapsed + dt, ROUND_SECONDS);
     invulnerable = std::max(0.0f, invulnerable - dt);
+    dashCooldown = std::max(0.0f, dashCooldown - dt);
     wave = std::min(3, 1 + static_cast<int>(elapsed / 20.0f));
 
     glm::vec3 movement(input.x, 0.0f, input.z);
     if (glm::dot(movement, movement) > 1.0f)
         movement = glm::normalize(movement);
-    player += movement * (input.slow ? 2.4f : 5.2f) * dt;
+    if (input.dash && dashCooldown <= 0.0f && glm::dot(movement, movement) > 0.0f) {
+        dashDirection = glm::normalize(movement);
+        dashTime = DASH_DURATION;
+        dashCooldown = DASH_COOLDOWN;
+    }
+    const bool dashing = dashTime > 0.0f;
+    player += (dashing ? dashDirection * DASH_SPEED : movement * (input.slow ? 2.4f : 5.2f)) * dt;
+    dashTime = std::max(0.0f, dashTime - dt);
     player.x = glm::clamp(player.x, -ARENA_X + PLAYER_RADIUS, ARENA_X - PLAYER_RADIUS);
     player.z = glm::clamp(player.z, -ARENA_Z + PLAYER_RADIUS, ARENA_Z - PLAYER_RADIUS);
     enemy.x = 2.8f * std::sin(elapsed * 0.55f);
@@ -65,7 +73,7 @@ void Game::update(float dt, const Input& input) {
         bool outside = std::abs(it->position.x) > ARENA_X + 2.0f ||
                        std::abs(it->position.z) > ARENA_Z + 2.0f;
         if (hit) {
-            if (invulnerable <= 0.0f) {
+            if (invulnerable <= 0.0f && !dashing) {
                 --health;
                 invulnerable = 1.2f;
             }

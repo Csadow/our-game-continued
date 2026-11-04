@@ -27,6 +27,42 @@ int main() {
               "Diagonal movement must not be faster.");
         check(slow.player.x < straight.player.x, "Shift must reduce speed.");
 
+        Game dash;
+        dash.aimTimer = dash.ringTimer = 1000;
+        dash.invulnerable = 0;
+        glm::vec3 dashStart = dash.player;
+        dash.bullets.push_back({dash.player + glm::vec3(DASH_SPEED * FIXED_STEP, 0, 0),
+                                {0,0,0}, true});
+        dash.update(FIXED_STEP, {1,0,false,true});
+        check(dash.player.x > dashStart.x + 0.1f && dash.health == MAX_HEALTH &&
+              dash.bullets.empty(), "Dash must move quickly through a shot without damage.");
+        check(dash.dashCooldown > 0 && dash.dashTime > 0, "Dash must start its timers.");
+        advance(dash, 0.25f, {1,0,false});
+        float afterDash = dash.player.x;
+        dash.update(FIXED_STEP, {1,0,false,true});
+        check(dash.player.x - afterDash < 0.1f, "Dash cannot repeat during cooldown.");
+        advance(dash, DASH_COOLDOWN, {});
+        check(dash.dashCooldown == 0, "Dash cooldown must expire.");
+        dash.update(FIXED_STEP, {0,0,false,true});
+        check(dash.dashTime == 0, "Dash needs a movement direction.");
+        dash.update(FIXED_STEP, {-1,0,false,true});
+        check(dash.dashTime > 0 && dash.dashDirection.x < 0,
+              "Dash should be available again in the requested direction.");
+        dash.paused = true;
+        float pausedCooldown = dash.dashCooldown;
+        advance(dash, 0.5f, {1,0,false,true});
+        check(dash.dashCooldown == pausedCooldown, "Pause must freeze dash cooldown.");
+        dash.reset();
+        check(dash.dashCooldown == 0 && dash.dashTime == 0,
+              "Restart must restore dash availability.");
+
+        Game edgeDash;
+        edgeDash.aimTimer = edgeDash.ringTimer = 1000;
+        edgeDash.player.x = ARENA_X - PLAYER_RADIUS - 0.05f;
+        advance(edgeDash, DASH_DURATION, {1,0,false,true});
+        check(edgeDash.player.x == ARENA_X - PLAYER_RADIUS,
+              "Dash must respect arena boundaries.");
+
         Game bounded;
         bounded.aimTimer = bounded.ringTimer = 1000;
         advance(bounded, 5, {1,1,false});
