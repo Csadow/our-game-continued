@@ -92,6 +92,30 @@ int main() {
         miss.update(FIXED_STEP, {});
         check(miss.bullets.size() == 1, "Off-arena bullets must be removed.");
 
+        Game graze;
+        graze.aimTimer = graze.ringTimer = 1000;
+        graze.invulnerable = 0;
+        graze.bullets.push_back({graze.player + glm::vec3(GRAZE_RADIUS - 0.05f,0,0),
+                                 {0,0,0},true});
+        graze.update(FIXED_STEP, {});
+        check(graze.grazes == 1 && graze.health == MAX_HEALTH &&
+              graze.score() == static_cast<int>(graze.elapsed * 100.0f) + GRAZE_BONUS,
+              "A near miss must award bonus points without damage.");
+        check(graze.grazeFlash > 0, "A near miss must show feedback.");
+        advance(graze, 0.2f);
+        check(graze.grazes == 1, "The same bullet can only be grazed once.");
+        graze.reset();
+        check(graze.grazes == 0 && graze.grazeFlash == 0,
+              "Restart must clear near miss points and feedback.");
+
+        Game safeGraze;
+        safeGraze.aimTimer = safeGraze.ringTimer = 1000;
+        safeGraze.bullets.push_back({safeGraze.player + glm::vec3(GRAZE_RADIUS - 0.05f,0,0),
+                                     {0,0,0},true});
+        safeGraze.update(FIXED_STEP, {});
+        check(safeGraze.grazes == 0,
+              "The opening damage grace period must not grant risk-free graze points.");
+
         Game paused;
         paused.paused = true;
         advance(paused, 1, {1,0,false});

@@ -7,6 +7,8 @@ constexpr float ARENA_X = 9.0f;
 constexpr float ARENA_Z = 7.0f;
 constexpr float PLAYER_RADIUS = 0.30f;
 constexpr float BULLET_RADIUS = 0.16f;
+constexpr float GRAZE_RADIUS = PLAYER_RADIUS + BULLET_RADIUS + 0.34f;
+constexpr int GRAZE_BONUS = 50;
 constexpr float ROUND_SECONDS = 60.0f;
 constexpr float FIXED_STEP = 1.0f / 120.0f;
 constexpr float DASH_SPEED = 15.0f;
@@ -25,6 +27,7 @@ struct Bullet {
     glm::vec3 position;
     glm::vec3 velocity;
     bool aimed = false;
+    bool grazed = false;
 };
 
 // Gameplay uses X/Z for the floor; Y is the height above it.
@@ -33,6 +36,7 @@ struct Game {
     glm::vec3 enemy{0.0f, 0.45f, -4.5f};
     std::vector<Bullet> bullets;
     int health = MAX_HEALTH;
+    int grazes = 0;
     int wave = 1;
     float elapsed = 0.0f;
     float invulnerable = 1.0f;
@@ -40,6 +44,7 @@ struct Game {
     float ringTimer = 2.5f;
     float dashCooldown = 0.0f;
     float dashTime = 0.0f;
+    float grazeFlash = 0.0f;
     glm::vec3 dashDirection{0.0f};
     bool paused = false;
     bool won = false;

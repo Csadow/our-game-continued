@@ -208,6 +208,7 @@ const std::map<char, std::array<unsigned char, 7>> FONT = {
     {'6',{14,16,16,30,17,17,14}}, {'7',{31,1,2,4,8,8,8}},
     {'8',{14,17,17,14,17,17,14}}, {'9',{14,17,17,15,1,1,14}},
     {':',{0,4,4,0,4,4,0}},       {'/',{1,2,2,4,8,8,16}},
+    {'+',{0,4,4,31,4,4,0}},
     {'-',{0,0,0,31,0,0,0}},      {'.',{0,0,0,0,0,4,4}}
 };
 
@@ -259,6 +260,7 @@ struct Hud {
         glm::vec4 white(0.88f, 0.86f, 0.81f, 1.0f);
         glm::vec4 muted(0.58f, 0.57f, 0.54f, 1.0f);
         glm::vec4 red(0.72f, 0.20f, 0.15f, 1.0f);
+        glm::vec4 gold(0.90f, 0.68f, 0.25f, 1.0f);
         glm::vec4 dark(0.07f, 0.065f, 0.06f, 0.94f);
         for (int i = 0; i < MAX_HEALTH; ++i)
             rect(24.0f + i * 29.0f, 30, 23, 15,
@@ -272,6 +274,12 @@ struct Hud {
             int tenths = static_cast<int>(std::ceil(game.dashCooldown * 10.0f));
             text(24, 58, "DASH " + std::to_string(tenths / 10) + "." +
                  std::to_string(tenths % 10), 1.5f, muted);
+        }
+        text(24, 80, "GRAZES " + std::to_string(game.grazes), 1.5f,
+             game.grazeFlash > 0.0f ? gold : muted);
+        if (game.grazeFlash > 0.0f) {
+            const std::string cue = "GRAZE +" + std::to_string(GRAZE_BONUS);
+            text((width - cue.size() * 12.0f) * 0.5f, 30, cue, 2.0f, gold);
         }
 
         rect(24, 640, width - 48, 61, dark);

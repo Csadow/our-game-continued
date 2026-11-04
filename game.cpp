@@ -17,7 +17,7 @@ void Game::reset() {
 }
 
 int Game::score() const {
-    return static_cast<int>(elapsed * 100.0f);
+    return static_cast<int>(elapsed * 100.0f) + grazes * GRAZE_BONUS;
 }
 
 void Game::update(float dt, const Input& input) {
@@ -27,6 +27,7 @@ void Game::update(float dt, const Input& input) {
     // A fixed 120 Hz step keeps movement and collision independent of frame rate.
     elapsed = std::min(elapsed + dt, ROUND_SECONDS);
     invulnerable = std::max(0.0f, invulnerable - dt);
+    grazeFlash = std::max(0.0f, grazeFlash - dt);
     dashCooldown = std::max(0.0f, dashCooldown - dt);
     wave = std::min(3, 1 + static_cast<int>(elapsed / 20.0f));
 
@@ -69,7 +70,8 @@ void Game::update(float dt, const Input& input) {
     for (auto it = bullets.begin(); it != bullets.end();) {
         it->position += it->velocity * dt;
         glm::vec3 difference = player - it->position;
-        bool hit = glm::dot(difference, difference) <= hitDistance * hitDistance;
+        float distanceSquared = glm::dot(difference, difference);
+        bool hit = distanceSquared <= hitDistance * hitDistance;
         bool outside = std::abs(it->position.x) > ARENA_X + 2.0f ||
                        std::abs(it->position.z) > ARENA_Z + 2.0f;
         if (hit) {
@@ -82,6 +84,12 @@ void Game::update(float dt, const Input& input) {
         } else if (outside) {
             it = bullets.erase(it);
         } else {
+            if (!it->grazed && !dashing && invulnerable <= 0.0f &&
+                distanceSquared <= GRAZE_RADIUS * GRAZE_RADIUS) {
+                it->grazed = true;
+                ++grazes;
+                grazeFlash = 0.7f;
+            }
             ++it;
         }
     }

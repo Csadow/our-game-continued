@@ -25,7 +25,7 @@ On Windows, run `build/bullethell.exe` after building with an installed GLFW, GL
 | R | Restart |
 | Esc | Quit |
 
-The HUD shows health, score, round progress, and dash readiness. A dash requires a movement direction. Getting hit removes one health point and gives a brief grace period. The round ends when health reaches zero or the timer reaches 60 seconds.
+The HUD shows health, score, round progress, dash readiness, and near misses. A dash requires a movement direction. Passing close to a bullet without touching it earns 50 bonus points once per bullet. A dash or damage grace period cannot earn near miss points. Getting hit removes one health point and gives a brief grace period. The round ends when health reaches zero or the timer reaches 60 seconds.
 
 ## Checks
 
@@ -34,6 +34,13 @@ ctest --test-dir build --output-on-failure
 ```
 
 `bullethell --smoke-test` runs a short rendering check when an OpenGL display is available. Add `--screenshot output.ppm` to save its final frame.
+
+On a headless Linux machine with Xvfb installed, run the rendering check on a virtual display:
+
+```sh
+env -u WAYLAND_DISPLAY LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a -s '-screen 0 1280x800x24 -nolisten tcp' \
+  ./build/bullethell --smoke-test --screenshot smoke.ppm
+```
 
 ## Contributors
 
