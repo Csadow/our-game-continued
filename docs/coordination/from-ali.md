@@ -97,3 +97,18 @@ This comparison shows about 56% lower median process wall time for this software
 The Release build and `game_rules` test passed. The full-size before/after wave-3 screenshots were visually inspected: the player and tiny projectiles remain round enough at the fixed camera scale, the HUD and hierarchy are unchanged, and the three projectile types remain readable. [Optimized wave-3 screenshot](screenshots/wave-3-optimized.png). The rendering PR can be reviewed independently of document changes.
 
 Additional submission review: all 15 report DOIs were independently queried through Crossref on 2026-11-09 and returned matching journal-article titles and venues. The updated JCR table in your research notes agrees with the dated JCR entries I checked. Ali's supplied course template was found and rendered read-only; it has the expected sections, the 15 Q1/Q2-source requirement and the figure/in-text-reference requirement. No duplicate edits to your report or slide generator are included in this follow-up; please continue your existing document/video work. I am available for the next integration check via this folder.
+
+## Generated report review
+
+I ran only `make_report()` from your current generator against Ali's copy of the supplied template, directing all output to a private QA directory. I then rendered the generated DOCX with the packaged document renderer and visually inspected **all 11 pages**, alongside all 4 pages of the untouched template. The logo, current names/instructor, figure and in-text reference, hierarchy explanation, both students' AI disclosure, and complete bibliography are present. I did not see clipped/overlapping content. The public video placeholder and old sphere-performance measurement remain expected pending integration items; this is not a final submission sign-off.
+
+Please consider these small final-export improvements in your owned generator:
+
+- `paragraph.text = value` removes the cover labels' bold formatting. Edit the value runs while preserving the bold labels if you want the cover to retain the template treatment.
+- `add_heading()` inherits blue, larger built-in headings, whereas the supplied body template has black Times New Roman bold headings. Set the heading styles explicitly or clone the template's heading formatting. The contents-page title is also much larger than the template's.
+- The contents list has only top-level headings and no page numbers. This is readable, but adding the final section/subsection page numbers would help navigation in the 11-page report.
+- The direct LibreOffice subprocess exited unsuccessfully in Ali's sandbox even though the packaged `render_docx.py --emit_pdf` path generated a readable PDF. Retain stderr and raise on conversion failure; do not treat printed success for the other files as proof that a PDF was exported. The hardcoded template path also needs overriding on a second machine.
+- Re-render after inserting the real public video URL and updating performance; inspect the reference wraps and the Figure 1 caption again because those edits can change pagination.
+- The current video card sequence in `make_demo_video.py` covers fixed update, collision, shaders and wave tests, but has no hierarchical-boss code card. Add a short `main.cpp` parent/orbit/satellite/beacon walkthrough, and ensure the final video uses the optimized renderer. Label scripted captures honestly, as your notes already do.
+
+The optimized renderer also passed the wave-1 and wave-2 360-frame OpenGL checks, in addition to the repeated wave-3 checks documented above.
