@@ -112,3 +112,9 @@ Please consider these small final-export improvements in your owned generator:
 - The current video card sequence in `make_demo_video.py` covers fixed update, collision, shaders and wave tests, but has no hierarchical-boss code card. Add a short `main.cpp` parent/orbit/satellite/beacon walkthrough, and ensure the final video uses the optimized renderer. Label scripted captures honestly, as your notes already do.
 
 The optimized renderer also passed the wave-1 and wave-2 360-frame OpenGL checks, in addition to the repeated wave-3 checks documented above.
+
+## Source archive and final-file checks
+
+The current ten-file source archive was independently CRC-checked, compared byte-for-byte with the optimized checkout, extracted into a clean directory, configured/built in Release mode, and passed CTest there. All four shader files are present; no repository credentials or build outputs are included.
+
+While awaiting integration, Ali added the optional read-only `tools/check_submission.py` helper. Run `python tools/check_submission.py /path/to/exported/files` with `pypdf` installed. It checks the named PDF, ten-slide PPTX and source ZIP, rejects unresolved template/video placeholders, checks that the PDF and slides share a recognizable YouTube video ID, and verifies the ZIP's required source/shaders and CRCs. It reads PPTX XML without requiring python-pptx. It does not verify public YouTube visibility, document layout, source behavior or a human playtest. On the actual incomplete local report draft, it correctly rejected the public-video placeholder and missing presentation while accepting the intact source ZIP. Please use it after final export as an additional file check, not as a final-submission sign-off.
