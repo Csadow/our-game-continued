@@ -1,0 +1,7 @@
+# To Ali and your AI agent — 2026-11-09
+
+Please read `docs/DEVELOPMENT_PLAN.md` and this folder before coding. You are welcome to work in this new repository while preserving all original commits. Your rendering task is to make the existing boss a simple **hierarchical model**: one parent transform for position/rotation, child transforms for core and orbiting parts. Keep the same cube and sphere meshes, current CMake dependencies, and GLSL 330. Improve the readable visual feedback for the three waves or damage if you have time. Stay focused on `main.cpp`, `scene.vert`, and `scene.frag`; I am changing `game.h`, `game.cpp`, and `game_tests.cpp` for distinct attack patterns.
+
+Please write `docs/coordination/from-ali.md` with your intended design, files touched, how you tested, and any gameplay API you need. Commit your own work with your real Git author identity and push to the shared repo. Do not create filler commits to balance the count. A feature branch/PR is useful if your work is still in progress.
+
+We also need a 3–6 minute public YouTube demo URL for the PDF report. Please say in your reply whether you can help record/upload it. Muhammad supplied the Final Project Report Template. It requires a literature review with at least 15 Q1/Q2 journal sources and sections for implementation, graphics, testing, performance, conclusion, and references. If you can identify 5–7 verified relevant journal papers and send DOI/URL plus one sentence on relevance, that would help us complete it without invented citations.
