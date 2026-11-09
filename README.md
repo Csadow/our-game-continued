@@ -2,6 +2,8 @@
 
 A small C++17 and OpenGL 3.3 survival game. Move around the arena, dodge the boss's aimed fans and radial volleys, and survive for 60 seconds. Wave two adds a rotating projectile stream; wave three fires opposite streams with a faster rhythm.
 
+The boss is a hierarchical model: its core, orbiting satellites, and small beacon children inherit a parent transform. The arena and HUD change from amber to blue to magenta across the waves. Cyan shots mark the rotating stream.
+
 ## Build and run
 
 Install a C++17 compiler, CMake 3.16 or newer, OpenGL development files, GLFW 3.3 or newer, GLEW, and GLM. On Arch Linux, the library packages are `glfw`, `glew`, and `glm`.
@@ -33,7 +35,7 @@ The HUD shows health, score, round progress, dash readiness, and near misses. A 
 ctest --test-dir build --output-on-failure
 ```
 
-`bullethell --smoke-test` runs a short rendering check when an OpenGL display is available. Add `--screenshot output.ppm` to save its final frame.
+`bullethell --smoke-test` runs a short rendering check when an OpenGL display is available. Use `--smoke-wave 1`, `2`, or `3` to start that check at a wave boundary; this does not change normal play. Add `--screenshot output.ppm` to save its final frame.
 
 On a headless Linux machine with Xvfb installed, run the rendering check on a virtual display:
 
@@ -48,4 +50,4 @@ This repository keeps the original commit history from [`at254135/our-game`](htt
 
 ## AI use
 
-Codex assisted Muhammad with planning, implementation suggestions, debugging, tests, and documentation. The team must review and understand every submitted change, verify the results, and disclose this assistance in the final report and presentation. Commit authorship reflects the student directing each change, not the AI tool.
+Codex assisted Mukhammed with planning, implementation suggestions, debugging, tests, and documentation. Ali used Codex for his hierarchical rendering implementation, validation, and handoff. The team must review and understand every submitted change, verify the results, and disclose this assistance in the final report and presentation. Commit authorship reflects the student directing each change, not the AI tool.

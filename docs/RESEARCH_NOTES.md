@@ -1,6 +1,14 @@
 # Literature review notes
 
-The supplied report template asks for at least 15 sources from Q1/Q2 journals. The 15 articles below have publisher DOI records and come from *Communications of the ACM*, *ACM Transactions on Graphics*, *Computer Graphics Forum*, *IEEE Transactions on Computers*, or *IEEE Transactions on Visualization and Computer Graphics*. Journal quartiles vary by year and subject category; check the course's preferred index before submitting. These are background sources, **not** a claim that the game implements every method.
+The supplied report template asks for at least 15 sources from Q1/Q2 journals. The 15 articles below have publisher DOI records and come from five journals whose **2024 Journal Citation Reports JIF quartiles** are Q1 or Q2 in the categories shown below. The [institutional copy of the 2024 JCR list, released in June 2025](https://cdn.umfcluj.ro/uploads/2024/08/JCR_2024_iunie2025.pdf), gives the venue, category, and JIF quartile. Quartiles are journal-level and depend on the selected year, index, and subject category; these values do not state a rank for each article in its original publication year. These are background sources, **not** a claim that the game implements every method.
+
+| Journal | 2024 JCR category | JIF quartile |
+| --- | --- | --- |
+| *Communications of the ACM* | Computer Science, Software Engineering | Q1 |
+| *ACM Transactions on Graphics* | Computer Science, Software Engineering | Q1 |
+| *Computer Graphics Forum* | Computer Science, Software Engineering | Q2 |
+| *IEEE Transactions on Computers* | Computer Science, Hardware & Architecture | Q2 |
+| *IEEE Transactions on Visualization and Computer Graphics* | Computer Science, Software Engineering | Q1 |
 
 | No. | Article | Journal and DOI | Use in our report |
 | --- | --- | --- | --- |
@@ -20,4 +28,4 @@ The supplied report template asks for at least 15 sources from Q1/Q2 journals. T
 | 14 | Crassin et al., “Interactive Indirect Illumination Using Voxel Cone Tracing” (2011) | *Computer Graphics Forum*, [10.1111/j.1467-8659.2011.02063.x](https://doi.org/10.1111/j.1467-8659.2011.02063.x) | Another advanced indirect light approach beyond our small shader. |
 | 15 | Bourque and Dudek, “Procedural Texture Matching and Transformation” (2004) | *Computer Graphics Forum*, [10.1111/j.1467-8659.2004.00777.x](https://doi.org/10.1111/j.1467-8659.2004.00777.x) | Procedural texture design background; our repeating checker is intentionally simpler. |
 
-Quartile checks used while selecting venues: [ACM journal report (2025)](https://www.acm.org/binaries/content/assets/press-releases/2025/july/news-release_impact_factors_2025_final.pdf), [IEEE journal title list (2025)](https://open.ieee.org/wp-content/uploads/IEEE-Title-List-January-2025.pdf), and the [2024 JCR list for *Computer Graphics Forum*](https://cdn.umfcluj.ro/uploads/2024/08/JCR_2024_iunie2025.pdf). The course's specified Q1/Q2 measure should be checked against these when finalizing the PDF.
+Additional publisher cross-checks: [ACM journal report (2025)](https://www.acm.org/binaries/content/assets/press-releases/2025/july/news-release_impact_factors_2025_final.pdf) and [IEEE journal title list (2025)](https://open.ieee.org/wp-content/uploads/IEEE-Title-List-January-2025.pdf). The JCR source above supplies one consistent ranking measure for all five venues.

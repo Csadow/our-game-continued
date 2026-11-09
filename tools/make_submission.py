@@ -181,20 +181,20 @@ def make_slides():
 
     slide = base_slide(pres, "The actual running scene", 4)
     slide.shapes.add_picture(str(screenshot), Inches(2.65), Inches(1.45), width=Inches(8.0))
-    add_text(slide, "Figure 1: captured from the 360-frame OpenGL smoke test", 2.65, 6.58, 8, 0.32, 15, MUTED)
+    add_text(slide, "Figure 1: actual third-wave OpenGL smoke capture", 2.65, 6.58, 8, 0.32, 15, MUTED)
 
     slide = base_slide(pres, "Geometry, camera, and shading", 5)
     bullet(slide, "Cube and generated sphere meshes use positions, normals, and UVs.", 1.55)
-    bullet(slide, "GLM builds model, lookAt view, and perspective projection matrices.", 2.45)
-    bullet(slide, "One fragment shader adds ambient, diffuse, specular, and emission.", 3.35)
-    bullet(slide, "A simple local light keeps the shapes readable during play.", 4.25)
+    bullet(slide, "Boss parent → orbit pivot → satellite → beacon inherit transforms.", 2.45)
+    bullet(slide, "GLM builds model, lookAt view, and perspective projection matrices.", 3.35)
+    bullet(slide, "The fragment shader adds ambient, diffuse, specular, and emission.", 4.25)
     add_text(slide, "Lectures L3–L5 and L9", 0.85, 5.8, 11, 0.4, 18, GOLD)
 
     slide = base_slide(pres, "Textures and animation", 6)
     bullet(slide, "C++ creates a 64×64 checker image and uploads it as an OpenGL texture.", 1.55)
     bullet(slide, "UV coordinates repeat the checker across the arena floor.", 2.45)
     bullet(slide, "World-space grid lines add a small procedural visual effect.", 3.35)
-    bullet(slide, "Sine movement and timers animate the boss and projectile patterns.", 4.25)
+    bullet(slide, "Time animates the boss; amber, blue, and magenta mark the waves.", 4.25)
     add_text(slide, "Lectures L8–L10", 0.85, 5.8, 11, 0.4, 18, GOLD)
 
     slide = base_slide(pres, "Gameplay code: small, testable rules", 7)
@@ -206,15 +206,15 @@ def make_slides():
 
     slide = base_slide(pres, "Testing and measured performance", 8)
     bullet(slide, "Rules test covers movement, collision, dash, graze, pause, restart, and win/loss.", 1.55)
-    bullet(slide, "OpenGL smoke test drew 360 frames with no GL errors.", 2.65)
-    bullet(slide, "One Xvfb + Mesa llvmpipe run: 88.2 frames/s, 205 MiB max RSS.", 3.75)
-    bullet(slide, "Software rendering at 1280×800; not a GPU benchmark.", 4.85, color=GOLD)
+    bullet(slide, "Three wave smoke checks drew 360 frames each with no GL errors.", 2.65)
+    bullet(slide, "Integrated wave 3: 35.8 frames/s, 224.7 MiB max RSS, 105 shots.", 3.75)
+    bullet(slide, "Single-run Xvfb software rendering at 1280×800.", 4.85, color=GOLD)
 
     slide = base_slide(pres, "Teamwork and academic integrity", 9)
     bullet(slide, "Mukhammed: gameplay, tests, integration, report and presentation drafts.", 1.55)
-    bullet(slide, "Ali: rendering, hierarchical boss model, shaders, and visual review (in progress).", 2.55)
+    bullet(slide, "Ali: hierarchical boss and wave visuals in main.cpp; rendering checks.", 2.55)
     bullet(slide, "Both retain original Git history and commit under their own identities.", 3.55)
-    bullet(slide, "Codex assisted with planning, code suggestions, testing, and documents.", 4.55)
+    bullet(slide, "Codex assisted both students with code, testing, and documents.", 4.55)
     add_text(slide, "Every submitted result needs student review and explanation.",
              0.85, 5.75, 11.8, 0.55, 20, GOLD)
 

@@ -17,7 +17,7 @@
 | Shading (L5-2) | Ambient, diffuse, specular, emission | Refine readable lighting and explain the equations |
 | Pixels, buffers, blending (L7) | Depth buffer, blended HUD, screenshot readback | Document depth/blend order and screenshot path |
 | Texture mapping (L8) | UV-mapped checkerboard texture and grid shader | Improve texture filtering if it benefits the scene |
-| Hierarchical models (L9) | Boss parts currently positioned separately | Make child positions follow a boss parent transform |
+| Hierarchical models (L9) | Boss parent, orbit pivots, satellites, and beacon children inherit transforms | Explain parent/local matrix composition in report and demo |
 | Procedural methods (L10) | Procedural checkerboard and time-based attack patterns | Add one restrained time-based visual effect if performance allows |
 
 The syllabus requires a buildable repository, a 3–6 minute demo, a report using the course template, and a slide deck. Its grading emphasizes technical correctness, visual quality/performance, interaction, documentation, report, and presentation. The submission instruction requires **three separate files**: presentation, PDF report containing a public YouTube demonstration link, and source ZIP. The supplied report template requires Introduction, Literature Review, Project Description, Technical Implementation, Graphics and Rendering, Testing and Evaluation, Conclusion and Future Work, References, and an optional Appendix. It explicitly asks for at least **15 sources from credible Q1/Q2 journals** in the literature review, performance evaluation, and a figure citation in the surrounding text.
@@ -25,9 +25,9 @@ The syllabus requires a buildable repository, a 3–6 minute demo, a report usin
 ## Milestones and ownership
 
 1. **Plan and integration baseline (Muhammad):** keep original history, record this plan, build and test, coordinate file ownership. Done when the plan is committed and Ali can read it.
-2. **Graphics and model (Ali):** own `main.cpp`, `scene.vert`, and `scene.frag`. Make the boss a clear hierarchical model; improve visual feedback and polish while keeping OpenGL 3.3 and simple readable code. Describe what changed in `docs/coordination/from-ali.md` and commit under Ali's real identity.
-3. **Gameplay (Muhammad):** own `game.h`, `game.cpp`, and `game_tests.cpp`. Make waves mechanically distinct and ensure win/loss, dash, grazing, bounds, and pause remain correct. Commit under Muhammad's real identity.
-4. **Integration (Muhammad with Ali):** pull both sets of commits, resolve any conflicts, run CMake build, `ctest`, and the Xvfb OpenGL smoke test. Review the screenshot together. Measure a simple frame rate in the report, with hardware and method stated.
+2. **Graphics and model (Ali):** own `main.cpp`, `scene.vert`, and `scene.frag`. Make the boss a clear hierarchical model; improve visual feedback and polish while keeping OpenGL 3.3 and simple readable code. Describe what changed in `docs/coordination/from-ali.md` and commit under Ali's real identity. The hierarchy and wave visual pass are merged; a small sphere-mesh performance review is in progress.
+3. **Gameplay (Mukhammed):** own `game.h`, `game.cpp`, and `game_tests.cpp`. Make waves mechanically distinct and ensure win/loss, dash, grazing, bounds, and pause remain correct. Complete and tested.
+4. **Integration (Mukhammed with Ali):** pull both sets of commits, resolve any conflicts, run CMake build, `ctest`, and the Xvfb OpenGL smoke test. Review the screenshot together. Measure a simple frame rate in the report, with hardware and method stated. Build, CTest, and all three wave smoke checks pass; final performance number follows the mesh review.
 5. **Submission (both):** record a 3–6 minute demonstration, publish it publicly on YouTube, and put its exact URL in the PDF report. Prepare a slide deck, PDF report following the supplied template, and source ZIP as separate files. Verify at least 15 relevant Q1/Q2 journal articles for the literature review; cite the supplied lectures where used. List actual contributions and include a truthful AI-use disclosure. Both students should be able to explain the code.
 
 ## Scope and acceptance checks

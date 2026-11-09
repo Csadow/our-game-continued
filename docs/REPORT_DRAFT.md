@@ -10,9 +10,9 @@
 
 Orbit Bullet Hell is a short C++ and OpenGL game in which the player survives a 60-second encounter with a moving boss. It was made to demonstrate the graphics pipeline taught in Computer Graphics Fundamentals while still being a complete interactive application. The player moves on an arena, avoids projectiles, gains points for surviving and narrowly missing a shot, and can slow down or dash to react to difficult patterns. The scene gives us a concrete reason to use geometry, transformations, a perspective camera, lighting, texture coordinates, GPU buffers, animation, and a two-dimensional heads-up display (HUD). Figure 1 shows an actual frame from the tested build.
 
-![Figure 1. Orbit Bullet Hell running on Mesa llvmpipe.](figures/gameplay.png)
+![Figure 1. Integrated third-wave scene running on Mesa llvmpipe.](figures/gameplay.png)
 
-Figure 1 illustrates the 3D arena, textured floor, boss, moving projectiles, player, and HUD. The capture was produced by the game's OpenGL smoke-test mode. The YouTube demonstration and code walkthrough will be available at the link on the title page after the team publishes it.
+Figure 1 illustrates the 3D arena, textured floor, hierarchical boss, moving projectiles, player, and HUD. The magenta wave label and progress bar identify wave 3; red shots are aimed, amber shots are radial, and cyan shots belong to the rotating stream. The capture was produced by `--smoke-wave 3`, a rendering test shortcut that starts at the third-wave boundary. It does not claim a player survived the earlier waves. The YouTube demonstration and code walkthrough will be available at the link on the title page after the team publishes it.
 
 ## 2. Literature Review and Background
 
@@ -24,7 +24,7 @@ Reeves [9] introduced particle systems as an approach to animated visual effects
 
 Collision work by Klosowski et al. [14] and Teschner et al. [15] shows techniques for larger or deformable scenes. Our projectiles and player are rigid spheres. Checking the distance from each projectile center to the player center once per fixed update is sufficient for the tested active projectile count. The comparison matters because it explains why we did not add a spatial tree or physics engine to a small student project.
 
-All 15 references are peer-reviewed articles in journals selected for Q1/Q2 standing in the relevant computer-science categories. Journal rankings depend on year and category; the venue checks and DOI links are recorded in `docs/RESEARCH_NOTES.md`. These papers are contextual sources. We do not claim to implement their advanced rendering or collision algorithms.
+All 15 research articles appear in five journals listed as Q1 or Q2 in the 2024 Journal Citation Reports JIF quartiles [16]. The categories are Computer Science, Software Engineering for four venues and Computer Science, Hardware & Architecture for IEEE Transactions on Computers. These are venue rankings for that year, not article-level ratings or historical ranks at publication. The venue checks and DOI links are recorded in `docs/RESEARCH_NOTES.md`. These papers are contextual sources; we do not claim to implement their advanced rendering or collision algorithms.
 
 ## 3. Project Description
 
@@ -48,9 +48,9 @@ C++17 holds the game state and updates it. GLFW creates the window and reads key
 
 ### 4.2 Development Process and Teamwork
 
-The team started with a playable core, then added dash and graze mechanics and made the three waves distinct. Mukhammed owns gameplay and test files; Ali owns the rendering and shader files for the hierarchical boss and visual pass. We communicate in `docs/coordination/` in the shared repository, review one another's commits, and run the same build and tests after integration. Each person commits under their own identity. Commit count is a rough coordination signal, not a substitute for explaining actual contributions.
+The team started with a playable core, then added dash and graze mechanics and made the three waves distinct. Mukhammed developed gameplay rules, tests, integration, and submission drafts. Ali built the hierarchical boss and wave visual feedback in `main.cpp`, tested all three rendering waves, and reviewed the report. The existing GLSL shader files did not change in Ali's rendering pass. We communicate in `docs/coordination/` in the shared repository, review one another's commits, and run the same build and tests after integration. Each person commits under their own identity. Commit count is a rough coordination signal, not a substitute for explaining actual contributions.
 
-Codex assisted Mukhammed with planning, implementation suggestions, debugging, documentation, and preparation of report materials. The students must read, test, and be able to explain every submitted change. This assistance is disclosed here as required by the syllabus; commit authorship identifies the student directing the work.
+Codex assisted Mukhammed with planning, implementation suggestions, debugging, documentation, and preparation of report materials. Ali also used Codex while implementing, validating, and documenting his rendering pass. The students must read, test, and be able to explain every submitted change. This assistance is disclosed here as required by the syllabus; commit authorship identifies the student directing the work.
 
 ### 4.3 Algorithms and Techniques
 
@@ -58,7 +58,7 @@ The game logic advances in fixed steps of 1/120 second. The render loop collects
 
 Each bullet stores position and velocity. At each step, position changes by velocity multiplied by the time step. A collision occurs when the squared center distance is no greater than the squared sum of the player and bullet radii. A larger radius detects a near miss after a non-hit. The squared comparison avoids a square root in the frequent collision loop. Timers determine when aimed, radial, and rotating shots spawn. The boss position and visual rotation use sine or elapsed-time angles. Shots outside the arena are removed so the active list stays bounded.
 
-For rendering, model matrices place and size meshes, a `lookAt` view matrix aims the camera, and a perspective matrix projects the 3D scene. The vertex shader transforms each vertex through model, view, and projection matrices. The fragment shader samples the floor texture and applies a local light. The HUD is built from colored quads, including a tiny 5-by-7 bitmap-style font, then drawn with alpha blending after the 3D scene.
+For rendering, model matrices place and size meshes, a `lookAt` view matrix aims the camera, and a perspective matrix projects the 3D scene. The vertex shader transforms each vertex through model, view, and projection matrices. Ali's boss uses a translated and rotating parent matrix. Core and heart transforms are children of that parent; orbit pivots hold arms and satellites; small beacons inherit each satellite's transform. The code composes parent and local matrices before drawing. Scale is applied only at the mesh leaves so a scaled core cannot stretch its sibling orbits. The vertex shader uses the inverse transpose of the model matrix for normals after nonuniform scaling. The fragment shader samples the floor texture and applies a local light. The HUD is built from colored quads, including a tiny 5-by-7 bitmap-style font, then drawn with alpha blending after the 3D scene.
 
 ## 5. Graphics and Rendering
 
@@ -72,25 +72,25 @@ The fragment shader calculates a normal, light direction, view direction, diffus
 
 ### 5.3 Texturing and Animation
 
-The checkerboard floor texture is generated in C++ as a 64-by-64 RGB image, uploaded with `glTexImage2D`, and sampled through UV coordinates in the fragment shader. `GL_REPEAT` repeats it across the floor. A separate grid is computed from world coordinates with `fract`, `fwidth`, and `smoothstep`; it is a simple procedural visual effect. The boss moves with time-based sine functions, and the projectile patterns change by wave. The player flashes briefly after damage; the HUD marks health, score, graze events, dash readiness, controls, and round progress. These features connect to lectures L8–L10.
+The checkerboard floor texture is generated in C++ as a 64-by-64 RGB image, uploaded with `glTexImage2D`, and sampled through UV coordinates in the fragment shader. `GL_REPEAT` repeats it across the floor. A separate grid is computed from world coordinates with `fract`, `fwidth`, and `smoothstep`; it is a simple procedural visual effect. The boss's parent bobs and rotates, its satellites orbit faster and farther in later waves, and the beacons inherit the satellites' motion. These movements use elapsed game time, so pause and restart also control the animation. Wave 1 uses amber, wave 2 blue, and wave 3 magenta on the boss, arena corner lights, wave label, and progress bar. Cyan spiral bullets remain distinct from red aimed bullets and amber radial bullets. The player flashes after damage and brightens during dash or graze; the HUD marks health, score, dash readiness, controls, and round progress. These features connect to lectures L8–L10.
 
 ## 6. Testing and Evaluation
 
 ### 6.1 Testing Methodology
 
-The CMake `game_rules` test checks movement speed, arena bounds, dash protection and cooldown, collision grace period, one-time graze scoring, pause and restart, distinct wave patterns, loss, and survival to the 60-second win. The OpenGL smoke test runs 360 rendered frames, checks OpenGL errors, and saves a screenshot. Both passed on the current code. A student should also play the full round on the presentation computer and check controls, readability, window size, and the win and loss screens; the headless test cannot replace that interaction check.
+The CMake `game_rules` test checks movement speed, arena bounds, dash protection and cooldown, collision grace period, one-time graze scoring, pause and restart, distinct wave patterns, loss, and survival to the 60-second win. It passed on the integrated code. Three OpenGL smoke checks each ran 360 rendered frames at the wave 1, 2, and 3 boundaries, checked GL errors, and saved screenshots. All passed. We also recorded and inspected real gameplay footage showing movement, pause, game over, and restart. A student should still play the full round on the presentation computer and check controls, readability, window size, and the win and loss screens; a scripted recording cannot replace that human review.
 
 ### 6.2 Performance Evaluation
 
-One 360-frame smoke run on 9 November 2026 took 4.081 seconds for the game process, or about 88.2 rendered frames per second; maximum resident memory for that child process was about 205 MiB. The machine had an AMD Ryzen 7 7735HS. Rendering used Mesa 26.2.3 `llvmpipe` through Xvfb at 1280 by 800 pixels, so this measures CPU software rendering rather than a dedicated GPU. Vsync was off in smoke mode. The measured active bullet count at the end was 35. These are a single-run development measurement, not a claim about every computer or a complete 60-second session.
+One integrated-build wave-3 smoke run on 9 November 2026 took 10.042 seconds for 360 frames, or about 35.8 rendered frames per second. Maximum resident memory for the child process was about 224.7 MiB, and 105 projectiles were active at the end. The machine had an AMD Ryzen 7 7735HS. Rendering used Mesa 26.2.3 `llvmpipe` through Xvfb at 1280 by 800 pixels, so this measures CPU software rendering rather than a dedicated GPU. Vsync was off in smoke mode. This is a single-run development measurement, not a claim about every computer or a complete 60-second session. The relatively dense sphere mesh drawn for each small bullet is a likely cost; Ali is checking a simpler mesh for the final build.
 
 ### 6.3 Issues and Debugging
 
-The project needed a headless rendering path because this workspace's normal desktop display was not reliable for automated checks. Xvfb with Mesa's software OpenGL renderer let us compile shaders, draw frames, check errors, and capture Figure 1. The game uses a fixed update step to reduce differences between fast and slow displays. Projectile removal limits growth of the bullet list. Moving diagonal input is normalized, and pause freezes timers, preventing inconsistent play. The final visual review and video must use the integrated version after Ali's rendering commits.
+The project needed a headless rendering path because this workspace's normal desktop display was not reliable for automated checks. Xvfb with Mesa's software OpenGL renderer let us compile shaders, draw frames, check errors, and capture Figure 1. A virtual display initially paused the game after a focus-loss event; the recording script now focuses the window and resumes play before capturing. The game uses a fixed update step to reduce differences between fast and slow displays. Projectile removal limits growth of the bullet list. Moving diagonal input is normalized, and pause freezes timers, preventing inconsistent play. The final video should be regenerated after the last rendering change.
 
 ## 7. Conclusion and Future Work
 
-Orbit Bullet Hell combines a complete 60-second game loop with the graphics techniques required by the course: geometry, transformations, camera projection, GPU buffers, fragment shading, texturing, procedural detail, animation, and a HUD. The rules and current OpenGL smoke checks pass. The main limitation is the deliberately simple geometry and lighting. Future work could add sound, more boss forms, particle effects, shadows, and a broader performance comparison, if they remain understandable and useful to gameplay. The final team review will confirm the visual pass and the public demo link before submission.
+Orbit Bullet Hell combines a complete 60-second game loop with the graphics techniques required by the course: geometry, hierarchical transformations, camera projection, GPU buffers, fragment shading, texturing, procedural detail, animation, and a HUD. The rules and all three OpenGL wave checks pass. The main limitations are simple lighting and performance on software rendering with many projectiles. Future work could add sound, more boss forms, particle effects, shadows, and a broader hardware performance comparison, if they remain understandable and useful to gameplay. The final team review will confirm the public demo link before submission.
 
 ## 8. References
 
@@ -109,6 +109,8 @@ Orbit Bullet Hell combines a complete 60-second game loop with the graphics tech
 [13] C. Crassin et al., “Interactive Indirect Illumination Using Voxel Cone Tracing,” *Computer Graphics Forum*, 2011. https://doi.org/10.1111/j.1467-8659.2011.02063.x  
 [14] J. Klosowski et al., “Efficient collision detection using bounding volume hierarchies of k-DOPs,” *IEEE Transactions on Visualization and Computer Graphics*, 1998. https://doi.org/10.1109/2945.675649  
 [15] M. Teschner et al., “Collision Detection for Deformable Objects,” *Computer Graphics Forum*, 2005. https://doi.org/10.1111/j.1467-8659.2005.00829.x
+
+[16] 2024 Journal Citation Reports JIF quartile list, institutional PDF released June 2025. https://cdn.umfcluj.ro/uploads/2024/08/JCR_2024_iunie2025.pdf
 
 ## 9. Appendix
 
