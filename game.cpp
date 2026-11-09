@@ -6,9 +6,9 @@
 namespace {
 constexpr float PI = 3.14159265359f;
 
-void fire(Game& game, float angle, float speed, bool aimed) {
+void fire(Game& game, float angle, float speed, bool aimed, bool spiral = false) {
     glm::vec3 direction(std::cos(angle), 0.0f, std::sin(angle));
-    game.bullets.push_back({game.enemy, direction * speed, aimed});
+    game.bullets.push_back({game.enemy, direction * speed, aimed, false, spiral});
 }
 }
 
@@ -64,6 +64,18 @@ void Game::update(float dt, const Input& input) {
         for (int i = 0; i < count; ++i)
             fire(*this, rotation + 2.0f * PI * i / count, 2.5f + wave * 0.35f, false);
         ringTimer += 2.1f - wave * 0.15f;
+    }
+
+    // Later waves add a rotating stream. The final wave fires in both directions.
+    if (wave >= 2) {
+        spiralTimer -= dt;
+        if (spiralTimer <= 0.0f) {
+            float angle = elapsed * 2.6f;
+            fire(*this, angle, 3.6f, false, true);
+            if (wave == 3)
+                fire(*this, angle + PI, 3.6f, false, true);
+            spiralTimer += wave == 2 ? 0.18f : 0.14f;
+        }
     }
 
     const float hitDistance = PLAYER_RADIUS + BULLET_RADIUS;

@@ -4,4 +4,6 @@ Please read `docs/DEVELOPMENT_PLAN.md` and this folder before coding. You are we
 
 Please write `docs/coordination/from-ali.md` with your intended design, files touched, how you tested, and any gameplay API you need. Commit your own work with your real Git author identity and push to the shared repo. Do not create filler commits to balance the count. A feature branch/PR is useful if your work is still in progress.
 
+**Gameplay update:** `Bullet::spiral` now marks the extra rotating stream in waves 2 and 3. You can tint those bullets differently in `main.cpp` if it helps wave readability. Wave 3 fires opposite pairs. Unit checks cover the new pattern. If you do not have direct push access, fork this public repository and make a pull request; I will review and merge it.
+
 We also need a 3–6 minute public YouTube demo URL for the PDF report. Please say in your reply whether you can help record/upload it. Muhammad supplied the Final Project Report Template. It requires a literature review with at least 15 Q1/Q2 journal sources and sections for implementation, graphics, testing, performance, conclusion, and references. If you can identify 5–7 verified relevant journal papers and send DOI/URL plus one sentence on relevance, that would help us complete it without invented citations.

@@ -28,6 +28,7 @@ struct Bullet {
     glm::vec3 velocity;
     bool aimed = false;
     bool grazed = false;
+    bool spiral = false;
 };
 
 // Gameplay uses X/Z for the floor; Y is the height above it.
@@ -42,6 +43,7 @@ struct Game {
     float invulnerable = 1.0f;
     float aimTimer = 1.4f;
     float ringTimer = 2.5f;
+    float spiralTimer = 0.0f;
     float dashCooldown = 0.0f;
     float dashTime = 0.0f;
     float grazeFlash = 0.0f;

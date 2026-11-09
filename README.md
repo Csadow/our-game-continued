@@ -1,6 +1,6 @@
 # Orbit Bullet Hell
 
-A small C++17 and OpenGL 3.3 survival game. Move around the arena, dodge the boss's aimed fans and radial volleys, and survive for 60 seconds. The round has three waves, with faster and denser attacks in later waves.
+A small C++17 and OpenGL 3.3 survival game. Move around the arena, dodge the boss's aimed fans and radial volleys, and survive for 60 seconds. Wave two adds a rotating projectile stream; wave three fires opposite streams with a faster rhythm.
 
 ## Build and run
 
@@ -45,3 +45,7 @@ env -u WAYLAND_DISPLAY LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a -s '-screen 0 1280x80
 ## Contributors
 
 This repository keeps the original commit history from [`at254135/our-game`](https://github.com/at254135/our-game), including work by Ali and Muhammad. Keep each new commit under the identity of the person who actually made the change so both contributors receive accurate credit.
+
+## AI use
+
+Codex assisted Muhammad with planning, implementation suggestions, debugging, tests, and documentation. The team must review and understand every submitted change, verify the results, and disclose this assistance in the final report and presentation. Commit authorship reflects the student directing each change, not the AI tool.

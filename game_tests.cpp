@@ -134,6 +134,25 @@ int main() {
         }
         check(aimed && ring, "Both bullet patterns must spawn.");
 
+        Game waveTwo;
+        waveTwo.elapsed = 20.0f;
+        waveTwo.aimTimer = waveTwo.ringTimer = 1000.0f;
+        waveTwo.invulnerable = 1000.0f;
+        waveTwo.update(FIXED_STEP, {});
+        check(waveTwo.wave == 2 && waveTwo.bullets.size() == 1 &&
+              waveTwo.bullets.front().spiral,
+              "Wave two must add a rotating projectile stream.");
+
+        Game waveThree;
+        waveThree.elapsed = 40.0f;
+        waveThree.aimTimer = waveThree.ringTimer = 1000.0f;
+        waveThree.invulnerable = 1000.0f;
+        waveThree.update(FIXED_STEP, {});
+        check(waveThree.wave == 3 && waveThree.bullets.size() == 2 &&
+              waveThree.bullets[0].spiral && waveThree.bullets[1].spiral &&
+              glm::dot(waveThree.bullets[0].velocity, waveThree.bullets[1].velocity) < -12.0f,
+              "Wave three must fire opposite rotating streams.");
+
         Game lost;
         lost.health = 1;
         lost.invulnerable = 0;
