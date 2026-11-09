@@ -1,0 +1,90 @@
+[
+  {
+    "variant": "before",
+    "warmup": true,
+    "repeat": 0,
+    "wall_seconds": 4.902467051999793,
+    "frames": 360,
+    "frames_per_wall_second": 73.4324160022963,
+    "max_rss_kib": 144848,
+    "user_cpu_seconds": 10.783485,
+    "system_cpu_seconds": 1.783698
+  },
+  {
+    "variant": "after",
+    "warmup": true,
+    "repeat": 0,
+    "wall_seconds": 2.308339511000213,
+    "frames": 360,
+    "frames_per_wall_second": 155.95626132310602,
+    "max_rss_kib": 124764,
+    "user_cpu_seconds": 10.838594,
+    "system_cpu_seconds": 0.174332
+  },
+  {
+    "variant": "after",
+    "warmup": false,
+    "repeat": 1,
+    "wall_seconds": 2.121570173999771,
+    "frames": 360,
+    "frames_per_wall_second": 169.68564340311036,
+    "max_rss_kib": 124188,
+    "user_cpu_seconds": 9.399181,
+    "system_cpu_seconds": 0.168816
+  },
+  {
+    "variant": "before",
+    "warmup": false,
+    "repeat": 1,
+    "wall_seconds": 4.946761901999707,
+    "frames": 360,
+    "frames_per_wall_second": 72.77487923048642,
+    "max_rss_kib": 145432,
+    "user_cpu_seconds": 10.462868,
+    "system_cpu_seconds": 1.778554
+  },
+  {
+    "variant": "before",
+    "warmup": false,
+    "repeat": 2,
+    "wall_seconds": 4.960064457000044,
+    "frames": 360,
+    "frames_per_wall_second": 72.57970196172327,
+    "max_rss_kib": 145192,
+    "user_cpu_seconds": 10.508375000000001,
+    "system_cpu_seconds": 1.757757
+  },
+  {
+    "variant": "after",
+    "warmup": false,
+    "repeat": 2,
+    "wall_seconds": 2.179468118999921,
+    "frames": 360,
+    "frames_per_wall_second": 165.1779151351803,
+    "max_rss_kib": 123912,
+    "user_cpu_seconds": 9.552385,
+    "system_cpu_seconds": 0.171695
+  },
+  {
+    "variant": "after",
+    "warmup": false,
+    "repeat": 3,
+    "wall_seconds": 2.232663947999754,
+    "frames": 360,
+    "frames_per_wall_second": 161.24235818047063,
+    "max_rss_kib": 124348,
+    "user_cpu_seconds": 10.204799,
+    "system_cpu_seconds": 0.147227
+  },
+  {
+    "variant": "before",
+    "warmup": false,
+    "repeat": 3,
+    "wall_seconds": 4.904587035000077,
+    "frames": 360,
+    "frames_per_wall_second": 73.4006752109751,
+    "max_rss_kib": 144736,
+    "user_cpu_seconds": 10.529026,
+    "system_cpu_seconds": 1.787649
+  }
+]

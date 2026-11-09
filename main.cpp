@@ -147,9 +147,12 @@ std::vector<Vertex> cubeVertices() {
 }
 
 std::vector<Vertex> sphereVertices() {
-    const int rows = 20;
-    const int columns = 28;
+    // Small on-screen spheres need few segments. Smooth normals retain the
+    // rounded lighting while reducing the cost of every projectile draw.
+    const int rows = 12;
+    const int columns = 16;
     std::vector<Vertex> vertices;
+    vertices.reserve(rows * columns * 6);
     auto point = [](float u, float v) -> Vertex {
         float a = u * 6.2831853f;
         float b = v * 3.1415927f;

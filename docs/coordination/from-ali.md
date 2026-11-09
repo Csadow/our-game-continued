@@ -80,3 +80,20 @@ I reviewed `docs/REPORT_DRAFT.md`, `docs/RESEARCH_NOTES.md`, and the relevant pr
 7. Replace every `VIDEO_URL_PENDING_PUBLIC_UPLOAD` occurrence with the actual public YouTube URL, regenerate all deliverables, inspect the exported pages/slides, and rebuild the source ZIP from the merged commit. Complete a real 60-second playtest and code explanation before submission.
 
 Publication update: the connector could read the repository but rejected file-object creation (HTTP 403). The newly created university SSH key was then explicitly tested and GitHub replied `Hi at254135!`. Only this key is configured in this repository, with the SSH agent and personal SSH configuration disabled for its Git operations.
+
+## Sphere performance follow-up — 2026-11-09
+
+Completed the integration-review request from `to-ali.md`, based on integrated main `0e46b8e`. The shared sphere now uses **12 rows by 16 columns**, retaining the same analytic positions, smooth normals, UVs, radius and draw path. Storage is reserved once before filling the mesh. Generated triangles per sphere fall from 1,120 to 384, a 65.7% reduction; vertices fall from 3,360 to 1,152. No gameplay code, hit radii, shaders or dependencies changed.
+
+Both versions were configured and built in Release mode on the same Intel Core i5-12450HX/CachyOS machine. Comparison used a dedicated Xvfb display at 1280×800, Mesa 26.2.5 llvmpipe (LLVM 23.1.3, 256 bits), vsync disabled, and the same command arguments: `--smoke-wave 3 --screenshot wave-3.ppm`. One warm-up per version was excluded, then three runs per version were interleaved, alternating which version ran first. Process wall time includes initialization and screenshot writing. Linux `wait4` measured peak resident memory for each child; this is process RSS, not GPU memory. All eight runs passed 360 rendered frames and ended at 105 projectiles, HP 3, and the same simulated time.
+
+| Mesh | Measured wall times | Median wall time | Median frames / wall second | Median peak process RSS |
+| --- | --- | --- | --- | --- |
+| 20 × 28 | 4.947, 4.960, 4.905 s | 4.947 s | 72.8 | 141.8 MiB |
+| 12 × 16 | 2.122, 2.179, 2.233 s | 2.179 s | 165.2 | 121.3 MiB |
+
+This comparison shows about 56% lower median process wall time for this software-rendered smoke workload on this machine. It is not a claim about dedicated-GPU FPS, other CPUs, or a full human-played round. Please remeasure your same Ryzen/Mesa wave-3 command for a local comparison rather than mixing these results with your 35.8 frames/s baseline. The raw observations, including warm-ups, CPU time and KiB RSS, are in [sphere-benchmark.json](sphere-benchmark.json).
+
+The Release build and `game_rules` test passed. The full-size before/after wave-3 screenshots were visually inspected: the player and tiny projectiles remain round enough at the fixed camera scale, the HUD and hierarchy are unchanged, and the three projectile types remain readable. [Optimized wave-3 screenshot](screenshots/wave-3-optimized.png). The rendering PR can be reviewed independently of document changes.
+
+Additional submission review: all 15 report DOIs were independently queried through Crossref on 2026-11-09 and returned matching journal-article titles and venues. The updated JCR table in your research notes agrees with the dated JCR entries I checked. Ali's supplied course template was found and rendered read-only; it has the expected sections, the 15 Q1/Q2-source requirement and the figure/in-text-reference requirement. No duplicate edits to your report or slide generator are included in this follow-up; please continue your existing document/video work. I am available for the next integration check via this folder.
