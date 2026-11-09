@@ -33,6 +33,13 @@
 
 namespace fs = std::filesystem;
 
+// The wave palette is shared by the HUD, arena lights and boss assembly.
+glm::vec3 waveColor(int wave) {
+    if (wave == 2) return {0.25f, 0.65f, 0.85f};
+    if (wave >= 3) return {0.85f, 0.30f, 0.65f};
+    return {0.95f, 0.55f, 0.18f};
+}
+
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
@@ -262,6 +269,9 @@ struct Hud {
         glm::vec4 red(0.72f, 0.20f, 0.15f, 1.0f);
         glm::vec4 gold(0.90f, 0.68f, 0.25f, 1.0f);
         glm::vec4 dark(0.07f, 0.065f, 0.06f, 0.94f);
+        glm::vec4 accent(waveColor(game.wave), 1.0f);
+        std::string waveLabel = "WAVE " + std::to_string(game.wave) + " / 3";
+        text((width - waveLabel.size() * 12.0f) * 0.5f, 58, waveLabel, 2.0f, accent);
         for (int i = 0; i < MAX_HEALTH; ++i)
             rect(24.0f + i * 29.0f, 30, 23, 15,
                  i < game.health ? red : glm::vec4(0.25f, 0.24f, 0.22f, 1));
@@ -284,7 +294,9 @@ struct Hud {
 
         rect(24, 640, width - 48, 61, dark);
         rect(40, 652, width - 80, 4, {0.24f,0.23f,0.21f,1});
-        rect(40, 652, (width - 80) * game.elapsed / ROUND_SECONDS, 4, muted);
+        rect(40, 652, (width - 80) * game.elapsed / ROUND_SECONDS, 4, accent);
+        for (int wave = 1; wave < 3; ++wave)
+            rect(40 + (width - 80) * wave / 3.0f, 650, 2, 8, white);
         text(40, 675, "WASD MOVE   SHIFT SLOW   SPACE DASH   P PAUSE   R RESTART   ESC QUIT", 1.4f, white);
 
         if (game.paused || game.finished()) {
@@ -350,7 +362,8 @@ fs::path executableDirectory(const char* argument) {
 #endif
 }
 
-int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs::path& screenshot) {
+int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, int smokeWave,
+        const fs::path& screenshot) {
     glewExperimental = GL_TRUE;
     GLenum result = glewInit();
     if (result != GLEW_OK)
@@ -379,6 +392,11 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
     hud.create(directory);
 
     Game game;
+    // Start each visual check at a wave boundary without changing normal play.
+    if (smokeTest) {
+        game.elapsed = (smokeWave - 1) * (ROUND_SECONDS / 3.0f);
+        game.wave = smokeWave;
+    }
     glfwSetWindowUserPointer(window, &game);
     glfwSetWindowFocusCallback(window, [](GLFWwindow* w, int focused) {
         auto* state = static_cast<Game*>(glfwGetWindowUserPointer(w));
@@ -461,13 +479,8 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
         glBindTexture(GL_TEXTURE_2D, texture);
         glUniform1i(glGetUniformLocation(program, "floorTexture"), 0);
 
-        auto draw = [&](const Mesh& mesh, glm::vec3 position, glm::vec3 size,
-                        glm::vec3 color, float emission = 0.0f, float rotation = 0.0f,
-                        float tilt = 0.0f, bool textured = false) {
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
-            model = glm::rotate(model, rotation, glm::vec3(0,1,0));
-            model = glm::rotate(model, tilt, glm::vec3(1,0,0));
-            model = glm::scale(model, size);
+        auto drawModel = [&](const Mesh& mesh, const glm::mat4& model,
+                             glm::vec3 color, float emission, bool textured = false) {
             glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
             glUniform3fv(colorLocation, 1, glm::value_ptr(color));
             glUniform1f(emissionLocation, emission);
@@ -475,6 +488,16 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
             glBindVertexArray(mesh.vao);
             glDrawArrays(GL_TRIANGLES, 0, mesh.count);
         };
+        auto draw = [&](const Mesh& mesh, glm::vec3 position, glm::vec3 size,
+                        glm::vec3 color, float emission = 0.0f, float rotation = 0.0f,
+                        float tilt = 0.0f, bool textured = false) {
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
+            model = glm::rotate(model, rotation, glm::vec3(0,1,0));
+            model = glm::rotate(model, tilt, glm::vec3(1,0,0));
+            drawModel(mesh, glm::scale(model, size), color, emission, textured);
+        };
+
+        glm::vec3 accent = waveColor(game.wave);
 
         draw(cube, {0,-.18f,0}, {18.3f,.32f,14.3f}, {.18f,.17f,.15f});
         draw(floor, {0,.005f,0}, {ARENA_X,1,ARENA_Z}, {1,1,1}, 0, 0, 0, true);
@@ -484,26 +507,47 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
             draw(cube, {0,.08f,side * ARENA_Z}, {18.1f,.16f,.10f}, border);
             for (float z : {-ARENA_Z, ARENA_Z}) {
                 draw(cube, {side * ARENA_X,.35f,z}, {.20f,.70f,.20f}, {.25f,.24f,.22f});
-                draw(sphere, {side * ARENA_X,.76f,z}, {.10f,.10f,.10f}, {.65f,.58f,.40f}, .15f);
+                draw(sphere, {side * ARENA_X,.76f,z}, {.10f,.10f,.10f}, accent, .30f);
             }
         }
 
-        glm::vec3 enemyCore = game.enemy + glm::vec3(0, .85f, 0);
-        draw(cube, enemyCore, {.85f,.85f,.85f}, {.65f,.16f,.10f}, .20f, game.elapsed, .65f);
-        draw(cube, enemyCore, {.45f,.45f,.45f}, {.90f,.53f,.20f}, .35f, -game.elapsed * 1.5f);
+        // Column vectors: world = parent * local * vertex. Keep scale on leaves
+        // so a scaled core never stretches the orbit radius or its siblings.
+        glm::mat4 bossParent = glm::translate(glm::mat4(1.0f),
+            game.enemy + glm::vec3(0, .85f + .08f * std::sin(game.elapsed * 2.0f), 0));
+        bossParent = glm::rotate(bossParent, game.elapsed * .55f, glm::vec3(0,1,0));
+        glm::mat4 core = glm::rotate(bossParent, .65f, glm::vec3(1,0,0));
+        drawModel(cube, glm::scale(core, glm::vec3(.85f)), accent * .65f, .20f);
+        glm::mat4 heart = glm::rotate(bossParent, -game.elapsed * 1.5f, glm::vec3(0,1,0));
+        drawModel(cube, glm::scale(heart, glm::vec3(.49f)), accent, .45f);
+        float orbitRadius = 1.05f + .12f * (game.wave - 1);
         for (int i = 0; i < 4; ++i) {
-            float a = game.elapsed * 1.4f + i * 1.5707963f;
-            glm::vec3 p = enemyCore + glm::vec3(std::cos(a)*.95f, .05f, std::sin(a)*.95f);
-            draw(cube, p, {.16f,.16f,.16f}, {.70f,.22f,.12f}, .25f, a);
+            float a = game.elapsed * (.85f + .20f * game.wave) + i * 1.5707963f;
+            glm::mat4 orbit = glm::rotate(bossParent, a, glm::vec3(0,1,0));
+            glm::mat4 arm = glm::translate(orbit, glm::vec3(orbitRadius * .5f, 0, 0));
+            drawModel(cube, glm::scale(arm, {orbitRadius, .055f, .055f}), accent * .4f, .10f);
+            glm::mat4 satellite = glm::translate(orbit, glm::vec3(orbitRadius, 0, 0));
+            satellite = glm::rotate(satellite, game.elapsed * 2.0f, glm::vec3(1,0,1));
+            drawModel(cube, glm::scale(satellite, glm::vec3(.24f)), accent, .30f);
+            // A child of the satellite inherits both its orbit and local spin.
+            glm::mat4 beacon = glm::translate(satellite, glm::vec3(0, .22f, 0));
+            drawModel(sphere, glm::scale(beacon, glm::vec3(.085f)), accent, .50f);
         }
         for (const Bullet& bullet : game.bullets) {
             glm::vec3 color = bullet.aimed ? glm::vec3(.80f,.12f,.08f) : glm::vec3(.90f,.54f,.12f);
+            if (bullet.spiral)
+                color = {.20f,.75f,.90f};
             draw(sphere, bullet.position, glm::vec3(BULLET_RADIUS), color, .25f);
         }
 
         bool blink = game.invulnerable > 0.0f && static_cast<int>(game.invulnerable * 12) % 2 == 0;
         glm::vec3 playerColor = blink ? glm::vec3(.65f,.68f,.73f) : glm::vec3(.18f,.36f,.62f);
-        draw(sphere, game.player, glm::vec3(PLAYER_RADIUS), playerColor);
+        if (game.dashTime > 0.0f)
+            playerColor = {.25f,.85f,1.0f};
+        else if (game.grazeFlash > 0.0f)
+            playerColor = {1.0f,.80f,.25f};
+        draw(sphere, game.player, glm::vec3(PLAYER_RADIUS), playerColor,
+             game.dashTime > 0.0f || game.grazeFlash > 0.0f ? .40f : 0.0f);
 
         hud.draw(game, 720.0f * aspect);
         if (smokeTest) {
@@ -533,15 +577,25 @@ int run(GLFWwindow* window, const fs::path& directory, bool smokeTest, const fs:
 
 int main(int argc, char** argv) {
     bool smokeTest = false;
+    int smokeWave = 1;
     fs::path screenshot;
     for (int i = 1; i < argc; ++i) {
         std::string argument = argv[i];
         if (argument == "--smoke-test")
             smokeTest = true;
+        else if (argument == "--smoke-wave" && i + 1 < argc) {
+            std::string wave = argv[++i];
+            if (wave != "1" && wave != "2" && wave != "3") {
+                std::cerr << "--smoke-wave must be 1, 2, or 3.\n";
+                return 1;
+            }
+            smokeWave = wave[0] - '0';
+            smokeTest = true;
+        }
         else if (argument == "--screenshot" && i + 1 < argc)
             screenshot = argv[++i];
         else {
-            std::cerr << "Usage: bullethell [--smoke-test] [--screenshot output.ppm]\n";
+            std::cerr << "Usage: bullethell [--smoke-test] [--smoke-wave 1|2|3] [--screenshot output.ppm]\n";
             return 1;
         }
     }
@@ -569,7 +623,7 @@ int main(int argc, char** argv) {
     glfwSwapInterval(smokeTest ? 0 : 1);
     int status = 0;
     try {
-        status = run(window, executableDirectory(argv[0]), smokeTest, screenshot);
+        status = run(window, executableDirectory(argv[0]), smokeTest, smokeWave, screenshot);
     } catch (const std::exception& error) {
         std::cerr << "Error: " << error.what() << '\n';
         status = 1;
