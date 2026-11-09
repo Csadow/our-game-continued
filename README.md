@@ -3,6 +3,7 @@
 A small C++17 and OpenGL 3.3 survival game. Move around the arena, dodge the boss's aimed fans and radial volleys, and survive for 60 seconds. Wave two adds a rotating projectile stream; wave three fires opposite streams with a faster rhythm.
 
 The boss is a hierarchical model: its core, orbiting satellites, and small beacon children inherit a parent transform. The arena and HUD change from amber to blue to magenta across the waves. Cyan shots mark the rotating stream.
+The player and projectiles share a low-detail sphere mesh with smooth normals, keeping the projectile-heavy final wave responsive.
 
 ## Build and run
 

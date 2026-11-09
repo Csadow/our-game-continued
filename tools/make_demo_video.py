@@ -53,6 +53,24 @@ def card(path, title, description, code=""):
     image.save(path)
 
 
+def wave_card(path, wave):
+    name = "wave-3-optimized.png" if wave == 3 else "wave-2.png"
+    source = ROOT / "docs/coordination/screenshots" / name
+    image = Image.open(source).convert("RGB").resize((960, 600))
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((0, 0, 960, 92), fill=(11, 13, 18))
+    draw.text((28, 12), f"Wave {wave} — labeled rendering check",
+              font=font(FONT, 29), fill=(238, 238, 232))
+    explanation = ("Blue boss and HUD; cyan rotating shots start at 20 seconds."
+                   if wave == 2 else
+                   "Magenta boss and HUD; opposite cyan streams at 40 seconds.")
+    draw.text((30, 54), explanation, font=font(FONT, 18), fill=(243, 179, 48))
+    draw.rectangle((0, 564, 960, 600), fill=(11, 13, 18))
+    draw.text((30, 572), "Test shortcut starts at the wave boundary; not a full playthrough.",
+              font=font(FONT, 15), fill=(216, 222, 224))
+    image.save(path)
+
+
 def still_video(image, seconds, output):
     run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
          "-loop", "1", "-framerate", "15", "-i", str(image),
@@ -67,13 +85,15 @@ def main():
     with tempfile.TemporaryDirectory(prefix="our-game-demo-") as temporary:
         folder = Path(temporary)
         cards = [
-            ("Orbit Bullet Hell", "Actual gameplay, then a short walkthrough of the C++ and GLSL source.\nControls: WASD move, Shift slow, Space dash, P pause, R restart.", "", 12),
+            ("Orbit Bullet Hell", "Actual gameplay, labeled wave checks, then the C++ and GLSL source.\nControls: WASD move, Shift slow, Space dash, P pause, R restart.", "", 12),
             ("Fixed update and movement", "game.cpp: 120 updates per second keep movement stable.",
              snippet("game.cpp", "// A fixed 120 Hz step", 16), 23),
             ("Projectile collision", "game.cpp: squared distances test hits without a square root.",
              snippet("game.cpp", "const float hitDistance", 15), 23),
             ("3D transformation pipeline", "scene.vert: model, view, and projection place vertices on screen.",
              snippet("scene.vert", "uniform mat4 model", 15), 23),
+            ("Hierarchical boss model", "main.cpp: the boss parent carries orbit pivots, satellites, and beacons.",
+             snippet("main.cpp", "glm::mat4 bossParent", 19), 23),
             ("Lighting in the fragment shader", "scene.frag: ambient, diffuse, specular, and emission.",
              snippet("scene.frag", "vec3 N =", 12), 23),
             ("Tests and three waves", "game_tests.cpp: checks keep the second and third waves distinct.",
@@ -89,6 +109,12 @@ def main():
             segments.append(video)
             if index == 0:
                 segments.append(CAPTURE)
+                for wave in (2, 3):
+                    wave_picture = folder / f"wave-{wave}.png"
+                    wave_video = folder / f"wave-{wave}.mp4"
+                    wave_card(wave_picture, wave)
+                    still_video(wave_picture, 14, wave_video)
+                    segments.append(wave_video)
         listing = folder / "segments.txt"
         listing.write_text("".join(f"file '{path}'\n" for path in segments))
         run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",

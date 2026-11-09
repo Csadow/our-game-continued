@@ -11,8 +11,8 @@ import subprocess
 import zipfile
 
 from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Inches as DocxInches, Pt as DocxPt
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT, WD_TAB_LEADER
+from docx.shared import Inches as DocxInches, Pt as DocxPt, RGBColor as DocxRGBColor
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
@@ -21,7 +21,10 @@ from pptx.util import Inches, Pt
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs/REPORT_DRAFT.md"
-TEMPLATE = Path("/home/sadow/Downloads/Computer Graphics Fundamentals report template.docx")
+TEMPLATE = Path(os.environ.get(
+    "OUR_GAME_REPORT_TEMPLATE",
+    "/home/sadow/Downloads/Computer Graphics Fundamentals report template.docx",
+))
 SUBMISSION = ROOT.parent / "our-game-submission"
 EDITABLE = ROOT.parent / "our-game-submission-editable"
 VIDEO_TOKEN = "VIDEO_URL_PENDING_PUBLIC_UPLOAD"
@@ -34,30 +37,65 @@ def plain(text):
 
 def make_report():
     doc = Document(TEMPLATE)
+    for name in ("Normal", "Heading 1", "Heading 2", "Title"):
+        style = doc.styles[name]
+        style.font.name = "Times New Roman"
+        style.font.size = DocxPt(12)
+        style.font.color.rgb = DocxRGBColor(0, 0, 0)
+        if name != "Normal":
+            style.font.bold = True
+    doc.styles["Heading 1"].paragraph_format.space_before = DocxPt(12)
+    doc.styles["Heading 2"].paragraph_format.space_before = DocxPt(8)
     # Keep the supplied title page and its university artwork; replace its fields.
     for paragraph in list(doc.paragraphs)[12:]:
         paragraph._element.getparent().remove(paragraph._element)
     replacements = {
-        "Course Name:": "Course Name: Computer Graphics Fundamentals (OKG 2214)",
-        "Project Title:": "Project Title: Orbit Bullet Hell",
-        "Team Members:": "Team Members: Mukhammed Sailau and Ali Turlas, IT-2507",
-        "Instructor:": "Instructor: Saleshova Sabina",
-        "Date of Submission:": "Date of Submission: 9 November 2026",
+        "Course Name:": "Computer Graphics Fundamentals (OKG 2214)",
+        "Project Title:": "Orbit Bullet Hell",
+        "Team Members:": "Mukhammed Sailau and Ali Turlas, IT-2507",
+        "Instructor:": "Saleshova Sabina",
+        "Date of Submission:": "9 November 2026",
     }
     for paragraph in doc.paragraphs:
         for start, value in replacements.items():
             if paragraph.text.startswith(start):
-                paragraph.text = value
+                # The template's first run is a bold field label. Keep it.
+                for run in paragraph.runs[1:]:
+                    run.text = ""
+                paragraph.runs[1].text = " " + value
     doc.add_paragraph("Public YouTube demonstration: " + VIDEO_URL)
     doc.add_page_break()
     doc.add_heading("Table of Contents", 0)
-    for title in (
-        "1. Introduction", "2. Literature Review and Background",
-        "3. Project Description", "4. Technical Implementation",
-        "5. Graphics and Rendering", "6. Testing and Evaluation",
-        "7. Conclusion and Future Work", "8. References", "9. Appendix",
+    for title, page, level in (
+        ("1. Introduction", 3, 0),
+        ("2. Literature Review and Background", 3, 0),
+        ("3. Project Description", 4, 0),
+        ("3.1 Objective", 4, 1), ("3.2 Problem Statement", 4, 1),
+        ("3.3 Scope and Rules", 4, 1),
+        ("4. Technical Implementation", 5, 0),
+        ("4.1 Tools and Technologies Used", 5, 1),
+        ("4.2 Development Process and Teamwork", 5, 1),
+        ("4.3 Algorithms and Techniques", 5, 1),
+        ("5. Graphics and Rendering", 6, 0),
+        ("5.1 2D and 3D Rendering", 6, 1),
+        ("5.2 Lighting and Shading", 6, 1),
+        ("5.3 Texturing and Animation", 6, 1),
+        ("6. Testing and Evaluation", 6, 0),
+        ("6.1 Testing Methodology", 6, 1),
+        ("6.2 Performance Evaluation", 7, 1),
+        ("6.3 Issues and Debugging", 7, 1),
+        ("7. Conclusion and Future Work", 7, 0),
+        ("8. References", 8, 0),
+        ("9. Appendix", 9, 0),
     ):
-        doc.add_paragraph("• " + title, style="List Paragraph")
+        paragraph = doc.add_paragraph()
+        if level:
+            paragraph.paragraph_format.left_indent = DocxInches(0.25)
+        paragraph.paragraph_format.tab_stops.add_tab_stop(
+            DocxInches(6.0), WD_TAB_ALIGNMENT.RIGHT, WD_TAB_LEADER.DOTS
+        )
+        run = paragraph.add_run(title + "\t" + str(page))
+        run.bold = level == 0
     doc.add_page_break()
 
     in_body = False
@@ -70,9 +108,11 @@ def make_report():
         if line.startswith("## "):
             if line.startswith("## 8. References"):
                 doc.add_page_break()
-            doc.add_heading(line[3:], level=1)
+            heading = doc.add_heading(line[3:], level=1)
+            heading.paragraph_format.keep_with_next = True
         elif line.startswith("### "):
-            doc.add_heading(line[4:], level=2)
+            heading = doc.add_heading(line[4:], level=2)
+            heading.paragraph_format.keep_with_next = True
         elif line.startswith("!["):
             match = re.match(r"!\[(.*?)\]\((.*?)\)", line)
             if match:
@@ -94,6 +134,8 @@ def make_report():
     footer.text = "Orbit Bullet Hell — IT-2507"
     output = EDITABLE / "Orbit_Bullet_Hell_Report_EDITABLE.docx"
     doc.save(output)
+    final_pdf = SUBMISSION / "Orbit_Bullet_Hell_Report.pdf"
+    final_pdf.unlink(missing_ok=True)
     result = subprocess.run(
         ["libreoffice", "-env:UserInstallation=file:///tmp/our-game-lo-profile",
          "--headless", "--convert-to", "pdf", "--outdir", str(SUBMISSION), str(output)],
@@ -101,9 +143,10 @@ def make_report():
     )
     converted = SUBMISSION / output.with_suffix(".pdf").name
     if result.returncode == 0 and converted.exists():
-        converted.rename(SUBMISSION / "Orbit_Bullet_Hell_Report.pdf")
+        converted.replace(final_pdf)
     else:
         print("LibreOffice could not convert the DOCX here; export it to PDF manually.")
+        print((result.stderr or result.stdout).strip())
 
 
 BG = RGBColor(11, 13, 18)
@@ -209,8 +252,9 @@ def make_slides():
     slide = base_slide(pres, "Testing and measured performance", 8)
     bullet(slide, "Rules test covers movement, collision, dash, graze, pause, restart, and win/loss.", 1.55)
     bullet(slide, "Three wave smoke checks drew 360 frames each with no GL errors.", 2.65)
-    bullet(slide, "Integrated wave 3: 35.8 frames/s, 224.7 MiB max RSS, 105 shots.", 3.75)
-    bullet(slide, "Single-run Xvfb software rendering at 1280×800.", 4.85, color=GOLD)
+    bullet(slide, "Final wave 3: 133.8 frames/s, 206.5 MiB max RSS, 105 shots.", 3.75)
+    bullet(slide, "Smaller sphere mesh: 384 triangles instead of 1,120 per shot.", 4.85)
+    add_text(slide, "Single-run Xvfb software rendering at 1280×800.", 0.85, 6.0, 11.8, 0.35, 18, GOLD)
 
     slide = base_slide(pres, "Teamwork and academic integrity", 9)
     bullet(slide, "Mukhammed: gameplay, tests, integration, report and presentation drafts.", 1.55)
