@@ -94,21 +94,21 @@ Orbit Bullet Hell combines a complete 60-second game loop with the graphics tech
 
 ## 8. References
 
-[1] H. Gouraud, “Continuous Shading of Curved Surfaces,” *IEEE Transactions on Computers*, 1971. https://doi.org/10.1109/T-C.1971.223313  
-[2] B. T. Phong, “Illumination for computer generated pictures,” *Communications of the ACM*, 1975. https://doi.org/10.1145/360825.360839  
-[3] R. L. Cook and K. E. Torrance, “A Reflectance Model for Computer Graphics,” *ACM Transactions on Graphics*, 1982. https://doi.org/10.1145/357290.357293  
-[4] C. Schlick, “An Inexpensive BRDF Model for Physically-based Rendering,” *Computer Graphics Forum*, 1994. https://doi.org/10.1111/1467-8659.1330233  
-[5] J. F. Blinn and M. E. Newell, “Texture and reflection in computer generated images,” *Communications of the ACM*, 1976. https://doi.org/10.1145/360349.360353  
-[6] E. Bourque and G. Dudek, “Procedural Texture Matching and Transformation,” *Computer Graphics Forum*, 2004. https://doi.org/10.1111/j.1467-8659.2004.00777.x  
-[7] K. Perlin, “Improving noise,” *ACM Transactions on Graphics*, 2002. https://doi.org/10.1145/566654.566636  
-[8] A. Lagae et al., “A Survey of Procedural Noise Functions,” *Computer Graphics Forum*, 2010. https://doi.org/10.1111/j.1467-8659.2010.01827.x  
-[9] W. T. Reeves, “Particle Systems—a Technique for Modeling a Class of Fuzzy Objects,” *ACM Transactions on Graphics*, 1983. https://doi.org/10.1145/357318.357320  
-[10] P.-P. Sloan, J. Kautz, and J. Snyder, “Precomputed radiance transfer for real-time rendering in dynamic, low-frequency lighting environments,” *ACM Transactions on Graphics*, 2002. https://doi.org/10.1145/566654.566612  
-[11] T. Ritschel et al., “The State of the Art in Interactive Global Illumination,” *Computer Graphics Forum*, 2012. https://doi.org/10.1111/j.1467-8659.2012.02093.x  
-[12] J.-M. Hasenfratz et al., “A Survey of Real-time Soft Shadows Algorithms,” *Computer Graphics Forum*, 2003. https://doi.org/10.1111/j.1467-8659.2003.00722.x  
-[13] C. Crassin et al., “Interactive Indirect Illumination Using Voxel Cone Tracing,” *Computer Graphics Forum*, 2011. https://doi.org/10.1111/j.1467-8659.2011.02063.x  
-[14] J. Klosowski et al., “Efficient collision detection using bounding volume hierarchies of k-DOPs,” *IEEE Transactions on Visualization and Computer Graphics*, 1998. https://doi.org/10.1109/2945.675649  
-[15] M. Teschner et al., “Collision Detection for Deformable Objects,” *Computer Graphics Forum*, 2005. https://doi.org/10.1111/j.1467-8659.2005.00829.x
+[1] H. Gouraud, “Continuous Shading of Curved Surfaces,” *IEEE Transactions on Computers*, C-20(6), 623–629, 1971. https://doi.org/10.1109/T-C.1971.223313  
+[2] B. T. Phong, “Illumination for computer generated pictures,” *Communications of the ACM*, 18(6), 311–317, 1975. https://doi.org/10.1145/360825.360839  
+[3] R. L. Cook and K. E. Torrance, “A Reflectance Model for Computer Graphics,” *ACM Transactions on Graphics*, 1(1), 7–24, 1982. https://doi.org/10.1145/357290.357293  
+[4] C. Schlick, “An Inexpensive BRDF Model for Physically-based Rendering,” *Computer Graphics Forum*, 13(3), 233–246, 1994. https://doi.org/10.1111/1467-8659.1330233  
+[5] J. F. Blinn and M. E. Newell, “Texture and reflection in computer generated images,” *Communications of the ACM*, 19(10), 542–547, 1976. https://doi.org/10.1145/360349.360353  
+[6] E. Bourque and G. Dudek, “Procedural Texture Matching and Transformation,” *Computer Graphics Forum*, 23(3), 461–468, 2004. https://doi.org/10.1111/j.1467-8659.2004.00777.x  
+[7] K. Perlin, “Improving noise,” *ACM Transactions on Graphics*, 21(3), 681–682, 2002. https://doi.org/10.1145/566654.566636  
+[8] A. Lagae et al., “A Survey of Procedural Noise Functions,” *Computer Graphics Forum*, 29(8), 2579–2600, 2010. https://doi.org/10.1111/j.1467-8659.2010.01827.x  
+[9] W. T. Reeves, “Particle Systems—a Technique for Modeling a Class of Fuzzy Objects,” *ACM Transactions on Graphics*, 2(2), 91–108, 1983. https://doi.org/10.1145/357318.357320  
+[10] P.-P. Sloan, J. Kautz, and J. Snyder, “Precomputed radiance transfer for real-time rendering in dynamic, low-frequency lighting environments,” *ACM Transactions on Graphics*, 21(3), 527–536, 2002. https://doi.org/10.1145/566654.566612  
+[11] T. Ritschel et al., “The State of the Art in Interactive Global Illumination,” *Computer Graphics Forum*, 31(1), 160–188, 2012. https://doi.org/10.1111/j.1467-8659.2012.02093.x  
+[12] J.-M. Hasenfratz et al., “A Survey of Real-time Soft Shadows Algorithms,” *Computer Graphics Forum*, 22(4), 753–774, 2003. https://doi.org/10.1111/j.1467-8659.2003.00722.x  
+[13] C. Crassin et al., “Interactive Indirect Illumination Using Voxel Cone Tracing,” *Computer Graphics Forum*, 30(7), 1921–1930, 2011. https://doi.org/10.1111/j.1467-8659.2011.02063.x  
+[14] J. Klosowski et al., “Efficient collision detection using bounding volume hierarchies of k-DOPs,” *IEEE Transactions on Visualization and Computer Graphics*, 4(1), 21–36, 1998. https://doi.org/10.1109/2945.675649  
+[15] M. Teschner et al., “Collision Detection for Deformable Objects,” *Computer Graphics Forum*, 24(1), 61–81, 2005. https://doi.org/10.1111/j.1467-8659.2005.00829.x
 
 [16] 2024 Journal Citation Reports JIF quartile list, institutional PDF released June 2025. https://cdn.umfcluj.ro/uploads/2024/08/JCR_2024_iunie2025.pdf
 

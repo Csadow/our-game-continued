@@ -1,6 +1,6 @@
 # Demonstration video plan
 
-The local draft is `../our-game-submission-editable/Orbit_Bullet_Hell_Demo_Draft.mp4`. It is about 3 minutes 30 seconds and contains a genuine OpenGL gameplay capture followed by actual C++ and GLSL source excerpts. The recording shows movement, projectile patterns, pause, game over, and restart. The team should review the final rendering version, add spoken explanation if desired, and upload the video to YouTube with **Public** visibility. Put its exact URL in both the editable report and the presentation before exporting the final PDF.
+The local draft is `../our-game-submission-editable/Orbit_Bullet_Hell_Demo_Draft.mp4`. It is about 3 minutes 30 seconds and contains a genuine OpenGL gameplay capture followed by actual C++ and GLSL source excerpts. The recording shows movement, projectile patterns, pause, game over, and restart. The team should review the final rendering version, add spoken explanation if desired, and upload the video to YouTube with **Public** visibility. To insert its URL in both the report and presentation, rerun `tools/make_submission.py` with `OUR_GAME_YOUTUBE_URL=https://youtu.be/YOUR_REAL_ID` set. Alternatively edit the DOCX and PPTX, then export the PDF again. The three files in the submission folder are drafts until this is done.
 
 | Time | On screen | Suggested explanation |
 | --- | --- | --- |

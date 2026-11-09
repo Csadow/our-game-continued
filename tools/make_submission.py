@@ -5,6 +5,7 @@ team replaces VIDEO_URL_PENDING_PUBLIC_UPLOAD with its public YouTube URL.
 """
 
 from pathlib import Path
+import os
 import re
 import subprocess
 import zipfile
@@ -24,6 +25,7 @@ TEMPLATE = Path("/home/sadow/Downloads/Computer Graphics Fundamentals report tem
 SUBMISSION = ROOT.parent / "our-game-submission"
 EDITABLE = ROOT.parent / "our-game-submission-editable"
 VIDEO_TOKEN = "VIDEO_URL_PENDING_PUBLIC_UPLOAD"
+VIDEO_URL = os.environ.get("OUR_GAME_YOUTUBE_URL", VIDEO_TOKEN)
 
 
 def plain(text):
@@ -46,7 +48,7 @@ def make_report():
         for start, value in replacements.items():
             if paragraph.text.startswith(start):
                 paragraph.text = value
-    doc.add_paragraph("Public YouTube demonstration: " + VIDEO_TOKEN)
+    doc.add_paragraph("Public YouTube demonstration: " + VIDEO_URL)
     doc.add_page_break()
     doc.add_heading("Table of Contents", 0)
     for title in (
@@ -59,7 +61,7 @@ def make_report():
     doc.add_page_break()
 
     in_body = False
-    for raw in REPORT.read_text().splitlines():
+    for raw in REPORT.read_text().replace(VIDEO_TOKEN, VIDEO_URL).splitlines():
         line = raw.strip()
         if line.startswith("## 1. Introduction"):
             in_body = True
@@ -220,7 +222,7 @@ def make_slides():
 
     slide = base_slide(pres, "Demonstration and references", 10)
     add_text(slide, "Public 3–6 minute YouTube demo:", 0.85, 1.55, 11.5, 0.45, 23, WHITE, True)
-    add_text(slide, VIDEO_TOKEN, 0.85, 2.2, 11.8, 0.5, 20, GOLD)
+    add_text(slide, VIDEO_URL, 0.85, 2.2, 11.8, 0.5, 20, GOLD)
     add_text(slide, "The PDF report contains 15 journal references with DOI links.\nKey background: Gouraud (1971), Phong (1975), Blinn and Newell (1976),\nPerlin (2002), and the graphics surveys listed in the report.",
              0.85, 3.35, 11.6, 1.8, 20)
     add_text(slide, "Source and coordination: github.com/Csadow/our-game-continued", 0.85, 6.05, 11.8, 0.4, 17, MUTED)
@@ -231,8 +233,6 @@ def make_slides():
 def make_source_zip():
     included = ["README.md", "CMakeLists.txt", "game.h", "game.cpp", "game_tests.cpp",
                 "main.cpp", "scene.vert", "scene.frag", "hud.vert", "hud.frag"]
-    included += [str(path.relative_to(ROOT)) for path in (ROOT / "docs").rglob("*") if path.is_file()]
-    included += [str(path.relative_to(ROOT)) for path in (ROOT / "tools").rglob("*") if path.is_file()]
     with zipfile.ZipFile(SUBMISSION / "Orbit_Bullet_Hell_Source.zip", "w", zipfile.ZIP_DEFLATED) as archive:
         for name in sorted(included):
             archive.write(ROOT / name, "Orbit_Bullet_Hell/" + name)
@@ -246,3 +246,5 @@ if __name__ == "__main__":
     make_source_zip()
     print("Generated presentation and source ZIP in", SUBMISSION)
     print("Editable report:", EDITABLE / "Orbit_Bullet_Hell_Report_EDITABLE.docx")
+    if VIDEO_URL == VIDEO_TOKEN:
+        print("DRAFT: add OUR_GAME_YOUTUBE_URL after the public upload, then regenerate.")
