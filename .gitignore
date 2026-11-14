@@ -4,3 +4,5 @@
 *.o
 *.ppm
 *.obj
+__pycache__/
+*.pyc

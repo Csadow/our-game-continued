@@ -3,7 +3,8 @@
 **Course:** Computer Graphics Fundamentals (OKG 2214)  
 **Team:** Mukhammed Sailau and Ali Turlas, IT-2507  
 **Instructor:** Saleshova Sabina  
-**Date:** 9 November 2026  
+**Date:** 14 November 2026
+
 **Demonstration:** VIDEO_URL_PENDING_PUBLIC_UPLOAD
 
 ## 1. Introduction
@@ -48,7 +49,7 @@ C++17 holds the game state and updates it. GLFW creates the window and reads key
 
 ### 4.2 Development Process and Teamwork
 
-The team started with a playable core, then added dash and graze mechanics and made the three waves distinct. Mukhammed developed gameplay rules, tests, integration, and submission drafts. Ali built the hierarchical boss and wave visual feedback in `main.cpp`, tested all three rendering waves, and reviewed the report. The existing GLSL shader files did not change in Ali's rendering pass. We communicate in `docs/coordination/` in the shared repository, review one another's commits, and run the same build and tests after integration. Each person commits under their own identity. Commit count is a rough coordination signal, not a substitute for explaining actual contributions.
+The team started with a playable core, then added dash and graze mechanics and made the three waves distinct. Mukhammed developed gameplay rules, tests, integration, and the report and presentation materials. Ali built the hierarchical boss and wave visual feedback in `main.cpp`, tested all three rendering waves, and reviewed the report. The existing GLSL shader files did not change in Ali's rendering pass. The students shared changes through Git branches, reviewed the integrated work, and ran the build and tests after integration. Each person committed under their own identity. Their contributions are described by the work completed, not just the number of commits.
 
 Codex assisted Mukhammed with planning, implementation suggestions, debugging, documentation, and preparation of report materials. Ali also used Codex while implementing, validating, and documenting his rendering pass. The students must read, test, and be able to explain every submitted change. This assistance is disclosed here as required by the syllabus; commit authorship identifies the student directing the work.
 
@@ -84,11 +85,11 @@ The CMake `game_rules` test checks movement speed, arena bounds, dash protection
 
 The final integrated wave-3 smoke run on 9 November 2026 took 2.690 seconds for 360 frames, or about 133.8 frames per process wall second. Maximum resident memory for the child process was about 206.5 MiB, and 105 projectiles were active at the end. The machine had an AMD Ryzen 7 7735HS. Rendering used Mesa 26.2.3 `llvmpipe` through Xvfb at 1280 by 800 pixels, with vsync off. This measures CPU software rendering and includes process initialization; it is not a dedicated-GPU FPS benchmark or a complete 60-second session. It is one development run, so other computers may differ.
 
-Ali reduced the shared sphere mesh from 20 × 28 to 12 × 16 rows and columns, changing each sphere from 1,120 to 384 generated triangles while retaining smooth normals, UVs, and the same collision radii. On his separate Intel Core i5-12450HX/Mesa llvmpipe setup, three interleaved measured wave-3 runs per version had median process wall times of 4.947 seconds before and 2.179 seconds after the mesh change, about a 56% reduction for that software-rendered workload. The same 360 frames and 105 end-of-check projectiles were present in both versions; warm-ups were excluded. His raw observations are in `docs/coordination/sphere-benchmark.json`. This comparison does not establish real-play hardware FPS.
+Ali reduced the shared sphere mesh from 20 × 28 to 12 × 16 rows and columns, changing each sphere from 1,120 to 384 generated triangles while retaining smooth normals, UVs, and the same collision radii. On his separate Intel Core i5-12450HX/Mesa llvmpipe setup, three interleaved measured wave-3 runs per version had median process wall times of 4.947 seconds before and 2.179 seconds after the mesh change, about a 56% reduction for that software-rendered workload. The same 360 frames and 105 end-of-check projectiles were present in both versions; warm-ups were excluded. His raw observations are in `docs/performance/sphere-benchmark.json`. This comparison does not establish real-play hardware FPS.
 
 ### 6.3 Issues and Debugging
 
-The project needed a headless rendering path because this workspace's normal desktop display was not reliable for automated checks. Xvfb with Mesa's software OpenGL renderer let us compile shaders, draw frames, check errors, and capture Figure 1. A virtual display initially paused the game after a focus-loss event; the recording script now focuses the window and resumes play before capturing. The game uses a fixed update step to reduce differences between fast and slow displays. Projectile removal limits growth of the bullet list. Moving diagonal input is normalized, and pause freezes timers, preventing inconsistent play. The local demo draft was regenerated from the optimized build.
+The project needed a headless rendering path for repeatable automated checks. Xvfb with Mesa's software OpenGL renderer let us compile shaders, draw frames, check errors, and capture Figure 1. A focus-loss event initially paused the game during recording, so the recording script now restores focus and resumes play before capturing. The game uses a fixed update step to reduce differences between fast and slow displays. Projectile removal limits growth of the bullet list. Moving diagonal input is normalized, and pause freezes timers, preventing inconsistent play. The local demo draft was recorded from the optimized build.
 
 ## 7. Conclusion and Future Work
 

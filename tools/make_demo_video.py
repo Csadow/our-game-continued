@@ -54,8 +54,7 @@ def card(path, title, description, code=""):
 
 
 def wave_card(path, wave):
-    name = "wave-3-optimized.png" if wave == 3 else "wave-2.png"
-    source = ROOT / "docs/coordination/screenshots" / name
+    source = ROOT / "docs/figures" / f"wave-{wave}.png"
     image = Image.open(source).convert("RGB").resize((960, 600))
     draw = ImageDraw.Draw(image)
     draw.rectangle((0, 0, 960, 92), fill=(11, 13, 18))

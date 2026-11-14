@@ -47,8 +47,8 @@ env -u WAYLAND_DISPLAY LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a -s '-screen 0 1280x80
 
 ## Contributors
 
-This repository keeps the original commit history from [`at254135/our-game`](https://github.com/at254135/our-game), including work by Ali and Muhammad. Keep each new commit under the identity of the person who actually made the change so both contributors receive accurate credit.
+Mukhammed Sailau developed the gameplay, tests, integration, and project documents. Ali Turlas developed the hierarchical boss, wave visuals, and sphere-mesh optimization. This repository preserves their original commit history from [`at254135/our-game`](https://github.com/at254135/our-game).
 
 ## AI use
 
-Codex assisted Mukhammed with planning, implementation suggestions, debugging, tests, and documentation. Ali used Codex for his hierarchical rendering implementation, validation, and handoff. The team must review and understand every submitted change, verify the results, and disclose this assistance in the final report and presentation. Commit authorship reflects the student directing each change, not the AI tool.
+Both students used Codex during development for planning, code, testing, and documentation. They are responsible for reviewing, testing, and explaining the submitted work. The report and presentation also disclose this assistance.

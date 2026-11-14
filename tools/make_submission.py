@@ -54,7 +54,7 @@ def make_report():
         "Project Title:": "Orbit Bullet Hell",
         "Team Members:": "Mukhammed Sailau and Ali Turlas, IT-2507",
         "Instructor:": "Saleshova Sabina",
-        "Date of Submission:": "9 November 2026",
+        "Date of Submission:": "14 November 2026",
     }
     for paragraph in doc.paragraphs:
         for start, value in replacements.items():
@@ -257,7 +257,7 @@ def make_slides():
     add_text(slide, "Single-run Xvfb software rendering at 1280×800.", 0.85, 6.0, 11.8, 0.35, 18, GOLD)
 
     slide = base_slide(pres, "Teamwork and academic integrity", 9)
-    bullet(slide, "Mukhammed: gameplay, tests, integration, report and presentation drafts.", 1.55)
+    bullet(slide, "Mukhammed: gameplay, tests, integration, report and presentation.", 1.55)
     bullet(slide, "Ali: hierarchical boss and wave visuals in main.cpp; rendering checks.", 2.55)
     bullet(slide, "Both retain original Git history and commit under their own identities.", 3.55)
     bullet(slide, "Codex assisted both students with code, testing, and documents.", 4.55)
@@ -269,7 +269,7 @@ def make_slides():
     add_text(slide, VIDEO_URL, 0.85, 2.2, 11.8, 0.5, 20, GOLD)
     add_text(slide, "The PDF report contains 15 journal references with DOI links.\nKey background: Gouraud (1971), Phong (1975), Blinn and Newell (1976),\nPerlin (2002), and the graphics surveys listed in the report.",
              0.85, 3.35, 11.6, 1.8, 20)
-    add_text(slide, "Source and coordination: github.com/Csadow/our-game-continued", 0.85, 6.05, 11.8, 0.4, 17, MUTED)
+    add_text(slide, "Source: github.com/Csadow/our-game-continued", 0.85, 6.05, 11.8, 0.4, 17, MUTED)
 
     pres.save(SUBMISSION / "Orbit_Bullet_Hell_Presentation.pptx")
 
