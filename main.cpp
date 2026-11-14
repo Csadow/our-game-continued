@@ -615,7 +615,7 @@ int main(int argc, char** argv) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_VISIBLE, smokeTest ? GLFW_FALSE : GLFW_TRUE);
-    GLFWwindow* window = glfwCreateWindow(1280, 800, "Orbit - Computer Graphics Week 7", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1280, 800, "Orbit Bullet Hell", nullptr, nullptr);
     if (!window) {
         std::cerr << "An OpenGL 3.3 core profile driver is required.\n";
         glfwTerminate();
